@@ -1,5 +1,6 @@
 <?php
 
+/* Enqueue child-theme stylesheet (Google Fonts import lives inside the CSS) */
 add_action('wp_enqueue_scripts', function () {
     wp_enqueue_style(
         'hello-elementor-child-style',
@@ -9,6 +10,25 @@ add_action('wp_enqueue_scripts', function () {
     );
 }, 20);
 
+/* Scroll-reveal: adds .sotb-visible when element enters viewport */
+add_action('wp_footer', function () { ?>
+<script>
+(function () {
+  if (!('IntersectionObserver' in window)) return;
+  var obs = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) {
+        e.target.classList.add('sotb-visible');
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.sotb-reveal').forEach(function (el) { obs.observe(el); });
+})();
+</script>
+<?php }, 20);
+
+/* Logo override — replaces the Elementor-managed logo src */
 add_action('wp_footer', function () {
     $logo_url = esc_url(get_stylesheet_directory_uri() . '/assets/img/logo-sotb-full-cropped.png');
     ?>
