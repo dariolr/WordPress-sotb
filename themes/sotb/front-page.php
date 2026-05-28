@@ -74,8 +74,8 @@ get_header();
 			</p>
 
 			<div class="btn-group">
-				<a href="<?php echo esc_url( home_url( '/interviste/' ) ); ?>" class="btn btn-primary">
-					Leggi le interviste
+				<a href="<?php echo esc_url( home_url( '/news/' ) ); ?>" class="btn btn-primary">
+					Leggi le news
 				</a>
 				<a href="https://tornei.sonsofthebeach.it" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">
 					Scopri i tornei
@@ -141,7 +141,7 @@ get_header();
 						<line x1="20" y1="18" x2="28" y2="18" stroke="rgba(255,255,255,0.35)" stroke-width="1.5" stroke-linecap="round"/>
 					</svg>
 				</span>
-				<h3>Interviste</h3>
+				<h3>News</h3>
 				<p>Faccia a faccia con i campioni, i tecnici e le storie che non trovi altrove.</p>
 			</div>
 
@@ -172,13 +172,13 @@ get_header();
 </div>
 
 <!-- ============================================================
-     ULTIME INTERVISTE
+     ULTIME NEWS
      ============================================================ -->
 <section class="section section--dark" aria-labelledby="interviews-heading">
 	<div class="container">
 		<header class="section-header sotb-fade-in">
 			<span class="section-kicker">Dal blog</span>
-			<h2 id="interviews-heading">Ultime Interviste</h2>
+			<h2 id="interviews-heading">Ultime News</h2>
 			<p>Le ultime storie raccontate da Sons of the Beach.</p>
 		</header>
 
@@ -214,8 +214,8 @@ get_header();
 
 		<?php if ( $has_posts ) : ?>
 			<div style="text-align:center; margin-top:2.5rem;" class="sotb-fade-in">
-				<a href="<?php echo esc_url( home_url( '/interviste/' ) ); ?>" class="btn btn-secondary">
-					Tutte le interviste →
+				<a href="<?php echo esc_url( home_url( '/news/' ) ); ?>" class="btn btn-secondary">
+					Tutte le news →
 				</a>
 			</div>
 		<?php endif; ?>

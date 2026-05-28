@@ -15,7 +15,7 @@ if ( have_posts() ) :
 	$author    = get_the_author();
 	$date      = get_the_date( 'd F Y' );
 	$cats      = get_the_category();
-	$cat_name  = ! empty( $cats ) ? esc_html( $cats[0]->name ) : 'Interviste';
+	$cat_name  = ! empty( $cats ) ? esc_html( $cats[0]->name ) : 'News';
 ?>
 
 <!-- SINGLE HERO -->
@@ -34,7 +34,7 @@ if ( have_posts() ) :
 		<nav class="breadcrumb" aria-label="Breadcrumb" style="margin-bottom:1rem;">
 			<a href="<?php echo esc_url( home_url( '/' ) ); ?>">Home</a>
 			<span class="breadcrumb-sep" aria-hidden="true">›</span>
-			<a href="<?php echo esc_url( home_url( '/interviste/' ) ); ?>">Interviste</a>
+			<a href="<?php echo esc_url( home_url( '/news/' ) ); ?>">News</a>
 			<span class="breadcrumb-sep" aria-hidden="true">›</span>
 			<span aria-current="page"><?php echo esc_html( wp_trim_words( get_the_title(), 6, '…' ) ); ?></span>
 		</nav>
@@ -70,9 +70,9 @@ if ( have_posts() ) :
 	<div class="container">
 		<div class="post-body">
 
-			<a href="<?php echo esc_url( home_url( '/interviste/' ) ); ?>" class="back-link">
+			<a href="<?php echo esc_url( home_url( '/news/' ) ); ?>" class="back-link">
 				<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-				Torna alle interviste
+				Torna alle news
 			</a>
 
 			<div class="post-content">
@@ -82,9 +82,9 @@ if ( have_posts() ) :
 			<!-- Post footer -->
 			<footer style="margin-top:3rem; padding-top:2rem; border-top:1px solid var(--color-border);">
 				<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
-					<a href="<?php echo esc_url( home_url( '/interviste/' ) ); ?>" class="back-link">
+					<a href="<?php echo esc_url( home_url( '/news/' ) ); ?>" class="back-link">
 						<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-						Tutte le interviste
+						Tutte le news
 					</a>
 					<?php
 					$prev = get_previous_post();

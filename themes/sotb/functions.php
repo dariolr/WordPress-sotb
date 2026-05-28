@@ -285,7 +285,7 @@ function sotb_render_post_card( WP_Post $post, bool $placeholder = false ): void
 	$date       = get_the_date( 'd M Y', $post );
 	$thumb_id   = get_post_thumbnail_id( $post );
 	$categories = get_the_category( $post->ID );
-	$cat_name   = ( ! empty( $categories ) ) ? esc_html( $categories[0]->name ) : 'Interviste';
+	$cat_name   = ( ! empty( $categories ) ) ? esc_html( $categories[0]->name ) : 'News';
 	?>
 	<article class="card sotb-fade-in">
 		<div class="card-top-border"></div>

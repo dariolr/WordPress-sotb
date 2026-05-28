@@ -11,7 +11,7 @@
 			<!-- Nav Links -->
 			<nav class="footer-nav" aria-label="<?php esc_attr_e( 'Footer Navigation', 'sotb' ); ?>">
 				<a href="<?php echo esc_url( home_url( '/' ) ); ?>">Home</a>
-				<a href="<?php echo esc_url( home_url( '/interviste/' ) ); ?>">Interviste</a>
+				<a href="<?php echo esc_url( home_url( '/news/' ) ); ?>">News</a>
 				<a href="<?php echo esc_url( home_url( '/tornei/' ) ); ?>">Tornei</a>
 				<a href="<?php echo esc_url( home_url( '/contatti/' ) ); ?>">Contatti</a>
 			</nav>

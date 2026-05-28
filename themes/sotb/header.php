@@ -10,7 +10,7 @@
 	<?php
 	// Open Graph / Twitter Card
 	$og_title       = is_singular() ? get_the_title() . ' — Sons of the Beach' : 'Sons of the Beach';
-	$og_description = is_singular() ? wp_strip_all_tags( get_the_excerpt() ) : 'La voce autentica dello sport da spiaggia. Interviste, tornei e tutto il beach volley italiano.';
+	$og_description = is_singular() ? wp_strip_all_tags( get_the_excerpt() ) : 'La voce autentica dello sport da spiaggia. News, tornei e tutto il beach volley italiano.';
 	$og_url         = is_singular() ? get_permalink() : home_url( '/' );
 	$og_image       = get_template_directory_uri() . '/assets/img/og-image.png';
 	if ( is_singular() && has_post_thumbnail() ) {
@@ -51,9 +51,9 @@
 			   <?php if ( is_front_page() ) echo 'class="current-menu-item" aria-current="page"'; ?>>
 				Home
 			</a>
-			<a href="<?php echo esc_url( home_url( '/interviste/' ) ); ?>" role="menuitem"
-			   <?php if ( is_page( 'interviste' ) || ( is_single() && in_category( 'interviste' ) ) ) echo 'class="current-menu-item" aria-current="page"'; ?>>
-				Interviste
+			<a href="<?php echo esc_url( home_url( '/news/' ) ); ?>" role="menuitem"
+			   <?php if ( is_page( 'news' ) || ( is_single() && in_category( 'news' ) ) ) echo 'class="current-menu-item" aria-current="page"'; ?>>
+				News
 			</a>
 			<a href="<?php echo esc_url( home_url( '/tornei/' ) ); ?>" role="menuitem"
 			   <?php if ( is_page( 'tornei' ) ) echo 'class="current-menu-item" aria-current="page"'; ?>>
