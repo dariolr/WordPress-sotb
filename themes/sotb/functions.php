@@ -106,11 +106,17 @@ add_action( 'after_setup_theme', 'sotb_add_image_sizes' );
 function sotb_enqueue_assets() {
 	$version = wp_get_theme()->get( 'Version' );
 
-	// Main stylesheet (includes Google Fonts @import)
+	wp_enqueue_style(
+		'sotb-fonts',
+		'https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap',
+		array(),
+		null
+	);
+
 	wp_enqueue_style(
 		'sotb-style',
 		get_stylesheet_uri(),
-		array(),
+		array( 'sotb-fonts' ),
 		$version
 	);
 
@@ -179,6 +185,67 @@ function sotb_body_classes( $classes ) {
 add_filter( 'body_class', 'sotb_body_classes' );
 
 /* ============================================================
+   NAVIGATION HELPERS
+   ============================================================ */
+function sotb_primary_menu_fallback( $args = null ): void {
+	?>
+	<div class="nav-links" id="navLinks" role="menubar">
+		<a href="<?php echo esc_url( home_url( '/' ) ); ?>" role="menuitem"
+		   <?php if ( is_front_page() ) echo 'class="current-menu-item" aria-current="page"'; ?>>
+			Home
+		</a>
+		<a href="<?php echo esc_url( home_url( '/news/' ) ); ?>" role="menuitem"
+		   <?php if ( is_page( 'news' ) || ( is_single() && in_category( 'news' ) ) ) echo 'class="current-menu-item" aria-current="page"'; ?>>
+			News
+		</a>
+		<a href="<?php echo esc_url( home_url( '/tornei/' ) ); ?>" role="menuitem"
+		   <?php if ( is_page( 'tornei' ) ) echo 'class="current-menu-item" aria-current="page"'; ?>>
+			Tornei
+		</a>
+		<a href="<?php echo esc_url( home_url( '/contatti/' ) ); ?>" class="nav-cta" role="menuitem"
+		   <?php if ( is_page( 'contatti' ) ) echo 'aria-current="page"'; ?>>
+			Contatti
+		</a>
+	</div>
+	<?php
+}
+
+function sotb_footer_menu_fallback( $args = null ): void {
+	?>
+	<nav class="footer-nav" aria-label="<?php esc_attr_e( 'Footer Navigation', 'sotb' ); ?>">
+		<a href="<?php echo esc_url( home_url( '/' ) ); ?>">Home</a>
+		<a href="<?php echo esc_url( home_url( '/news/' ) ); ?>">News</a>
+		<a href="<?php echo esc_url( home_url( '/tornei/' ) ); ?>">Tornei</a>
+		<a href="<?php echo esc_url( home_url( '/contatti/' ) ); ?>">Contatti</a>
+	</nav>
+	<?php
+}
+
+function sotb_nav_menu_link_attributes( array $atts, WP_Post $menu_item, stdClass $args ): array {
+	if ( isset( $args->theme_location ) && 'primary' === $args->theme_location ) {
+		$atts['role'] = 'menuitem';
+
+		if ( isset( $atts['href'] ) && false !== strpos( $atts['href'], '/contatti/' ) ) {
+			$atts['class'] = isset( $atts['class'] ) ? $atts['class'] . ' nav-cta' : 'nav-cta';
+		}
+	}
+
+	return $atts;
+}
+add_filter( 'nav_menu_link_attributes', 'sotb_nav_menu_link_attributes', 10, 3 );
+
+function sotb_contact_notice_key( string $type ): string {
+	$remote_addr = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+	$user_agent  = isset( $_SERVER['HTTP_USER_AGENT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) : '';
+
+	return 'sotb_contact_' . sanitize_key( $type ) . '_' . wp_hash( $remote_addr . '|' . $user_agent );
+}
+
+function sotb_set_contact_notice( string $type, string $message ): void {
+	set_transient( sotb_contact_notice_key( $type ), $message, 60 );
+}
+
+/* ============================================================
    CONTACT FORM HANDLER
    ============================================================ */
 function sotb_handle_contact_form() {
@@ -189,8 +256,19 @@ function sotb_handle_contact_form() {
 		return;
 	}
 
+	if ( ! empty( $_POST['sotb_website'] ) ) {
+		sotb_set_contact_notice( 'error', 'Si è verificato un errore. Riprova più tardi.' );
+		return;
+	}
+
+	$submitted_at = isset( $_POST['sotb_submitted_at'] ) ? absint( $_POST['sotb_submitted_at'] ) : 0;
+	if ( ! $submitted_at || time() - $submitted_at < 3 ) {
+		sotb_set_contact_notice( 'error', 'Si è verificato un errore. Riprova più tardi.' );
+		return;
+	}
+
 	if ( empty( $_POST['sotb_nome'] ) || empty( $_POST['sotb_email'] ) || empty( $_POST['sotb_messaggio'] ) ) {
-		set_transient( 'sotb_contact_error', 'Compila tutti i campi richiesti.', 60 );
+		sotb_set_contact_notice( 'error', 'Compila tutti i campi richiesti.' );
 		return;
 	}
 
@@ -199,7 +277,7 @@ function sotb_handle_contact_form() {
 	$messaggio = sanitize_textarea_field( wp_unslash( $_POST['sotb_messaggio'] ) );
 
 	if ( ! is_email( $email ) ) {
-		set_transient( 'sotb_contact_error', 'Inserisci un indirizzo email valido.', 60 );
+		sotb_set_contact_notice( 'error', 'Inserisci un indirizzo email valido.' );
 		return;
 	}
 
@@ -214,9 +292,9 @@ function sotb_handle_contact_form() {
 	$sent = wp_mail( $to, $subject, $body, $headers );
 
 	if ( $sent ) {
-		set_transient( 'sotb_contact_success', 'Messaggio inviato! Ti risponderemo al più presto.', 60 );
+		sotb_set_contact_notice( 'success', 'Messaggio inviato! Ti risponderemo al più presto.' );
 	} else {
-		set_transient( 'sotb_contact_error', "Si è verificato un errore. Riprova più tardi.", 60 );
+		sotb_set_contact_notice( 'error', "Si è verificato un errore. Riprova più tardi." );
 	}
 
 	wp_safe_redirect( get_permalink() );
@@ -235,11 +313,18 @@ function sotb_get_logo_html( string $size = 'nav' ): string {
 	$alt       = esc_attr( get_bloginfo( 'name' ) );
 
 	if ( file_exists( get_template_directory() . '/assets/img/logo-sotb-full-cropped.png' ) ) {
-		return '<img src="' . esc_url( $logo_url ) . '" alt="' . $alt . '" height="' . $height . '" width="auto" loading="lazy">';
+		return '<img src="' . esc_url( $logo_url ) . '" alt="' . $alt . '" height="' . esc_attr( $height ) . '" loading="lazy">';
 	}
 
 	// Fallback text
 	return '<span class="' . ( 'nav' === $size ? 'nav-logo-text' : 'footer-logo-text' ) . '">Sons of <span>the Beach</span></span>';
+}
+
+function sotb_get_ball_image_html( string $class = 'sotb-ball-icon', string $loading = 'lazy' ): string {
+	$classes  = trim( 'sotb-ball-icon ' . $class );
+	$ball_url = get_template_directory_uri() . '/assets/img/beach-volley-hero.webp';
+
+	return '<img class="' . esc_attr( $classes ) . '" src="' . esc_url( $ball_url ) . '" alt="" loading="' . esc_attr( $loading ) . '" decoding="async" aria-hidden="true">';
 }
 
 /* ============================================================
@@ -262,8 +347,8 @@ function sotb_render_post_card( WP_Post $post, bool $placeholder = false ): void
 		?>
 		<article class="card card-placeholder sotb-fade-in">
 			<div class="card-top-border"></div>
-			<div class="card-image">
-				<div class="card-image-placeholder">🏐</div>
+			<div class="card-image card-image--ball">
+				<div class="card-image-placeholder"><?php echo sotb_get_ball_image_html( 'card-placeholder-ball', 'eager' ); ?></div>
 			</div>
 			<div class="card-body">
 				<span class="prossimamente-badge">Prossimamente</span>
@@ -289,14 +374,14 @@ function sotb_render_post_card( WP_Post $post, bool $placeholder = false ): void
 	?>
 	<article class="card sotb-fade-in">
 		<div class="card-top-border"></div>
-		<div class="card-image">
+		<div class="card-image<?php echo $thumb_id ? '' : ' card-image--ball'; ?>">
 			<?php if ( $thumb_id ) : ?>
 				<a href="<?php echo esc_url( $permalink ); ?>" tabindex="-1" aria-hidden="true">
 					<?php echo wp_get_attachment_image( $thumb_id, 'sotb-card', false, array( 'alt' => esc_attr( $title ) ) ); ?>
 				</a>
 			<?php else : ?>
 				<a href="<?php echo esc_url( $permalink ); ?>" tabindex="-1" aria-hidden="true">
-					<div class="card-image-placeholder">🏐</div>
+					<div class="card-image-placeholder"><?php echo sotb_get_ball_image_html( 'card-placeholder-ball', 'eager' ); ?></div>
 				</a>
 			<?php endif; ?>
 		</div>

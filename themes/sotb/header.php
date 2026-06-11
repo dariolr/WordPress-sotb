@@ -45,25 +45,17 @@
 			<?php echo sotb_get_logo_html( 'nav' ); ?>
 		</a>
 
-		<!-- Desktop Nav Links -->
-		<div class="nav-links" id="navLinks" role="menubar">
-			<a href="<?php echo esc_url( home_url( '/' ) ); ?>" role="menuitem"
-			   <?php if ( is_front_page() ) echo 'class="current-menu-item" aria-current="page"'; ?>>
-				Home
-			</a>
-			<a href="<?php echo esc_url( home_url( '/news/' ) ); ?>" role="menuitem"
-			   <?php if ( is_page( 'news' ) || ( is_single() && in_category( 'news' ) ) ) echo 'class="current-menu-item" aria-current="page"'; ?>>
-				News
-			</a>
-			<a href="<?php echo esc_url( home_url( '/tornei/' ) ); ?>" role="menuitem"
-			   <?php if ( is_page( 'tornei' ) ) echo 'class="current-menu-item" aria-current="page"'; ?>>
-				Tornei
-			</a>
-			<a href="<?php echo esc_url( home_url( '/contatti/' ) ); ?>" class="nav-cta" role="menuitem"
-			   <?php if ( is_page( 'contatti' ) ) echo 'aria-current="page"'; ?>>
-				Contatti
-			</a>
-		</div>
+		<?php
+		wp_nav_menu( array(
+			'theme_location' => 'primary',
+			'menu_id'        => 'navLinks',
+			'menu_class'     => 'nav-links',
+			'container'      => false,
+			'fallback_cb'    => 'sotb_primary_menu_fallback',
+			'depth'          => 1,
+			'items_wrap'     => '<ul id="%1$s" class="%2$s" role="menubar">%3$s</ul>',
+		) );
+		?>
 
 		<!-- Hamburger Button -->
 		<button class="nav-hamburger" id="navHamburger" aria-controls="navLinks" aria-expanded="false" aria-label="<?php esc_attr_e( 'Apri menu', 'sotb' ); ?>">

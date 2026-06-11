@@ -8,13 +8,17 @@
 				<?php echo sotb_get_logo_html( 'footer' ); ?>
 			</a>
 
-			<!-- Nav Links -->
-			<nav class="footer-nav" aria-label="<?php esc_attr_e( 'Footer Navigation', 'sotb' ); ?>">
-				<a href="<?php echo esc_url( home_url( '/' ) ); ?>">Home</a>
-				<a href="<?php echo esc_url( home_url( '/news/' ) ); ?>">News</a>
-				<a href="<?php echo esc_url( home_url( '/tornei/' ) ); ?>">Tornei</a>
-				<a href="<?php echo esc_url( home_url( '/contatti/' ) ); ?>">Contatti</a>
-			</nav>
+			<?php
+			wp_nav_menu( array(
+				'theme_location'       => 'footer',
+				'menu_class'           => 'footer-nav',
+				'container'            => 'nav',
+				'container_class'      => 'footer-nav-wrap',
+				'container_aria_label' => __( 'Footer Navigation', 'sotb' ),
+				'fallback_cb'          => 'sotb_footer_menu_fallback',
+				'depth'                => 1,
+			) );
+			?>
 
 			<!-- Social Icons -->
 			<div class="footer-social">
@@ -35,7 +39,7 @@
 		</div>
 
 		<div class="footer-bottom">
-			<p>&copy; <?php echo date( 'Y' ); ?> <?php bloginfo( 'name' ); ?> &mdash; Tutti i diritti riservati &nbsp;|&nbsp; <a href="<?php echo esc_url( home_url( '/contatti/' ) ); ?>">Contatti</a></p>
+			<p>&copy; <?php echo esc_html( wp_date( 'Y' ) ); ?> <?php bloginfo( 'name' ); ?> &mdash; Tutti i diritti riservati &nbsp;|&nbsp; <a href="<?php echo esc_url( home_url( '/contatti/' ) ); ?>">Contatti</a></p>
 		</div>
 
 	</div>

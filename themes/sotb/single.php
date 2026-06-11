@@ -66,7 +66,7 @@ if ( have_posts() ) :
 </header>
 
 <!-- POST CONTENT -->
-<main class="single-content" id="main-content">
+<main class="single-content editorial-single-content" id="main-content">
 	<div class="container">
 		<div class="post-body">
 

@@ -16,53 +16,13 @@ get_header();
 
 	<!-- Decorative volleyball — right side of hero -->
 	<div class="hero-ball" aria-hidden="true">
-		<svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-			<defs>
-				<radialGradient id="hbg" cx="38%" cy="32%" r="65%">
-					<stop offset="0%"   stop-color="#EDD9A3"/>
-					<stop offset="52%"  stop-color="#D4B483"/>
-					<stop offset="100%" stop-color="#9E7C45"/>
-				</radialGradient>
-				<radialGradient id="hbg2" cx="50%" cy="50%" r="50%">
-					<stop offset="0%"   stop-color="rgba(255,255,255,0)"/>
-					<stop offset="85%"  stop-color="rgba(0,0,0,0)"/>
-					<stop offset="100%" stop-color="rgba(0,0,0,0.22)"/>
-				</radialGradient>
-				<clipPath id="hbc"><circle cx="100" cy="100" r="96"/></clipPath>
-			</defs>
-			<!-- Ball body -->
-			<circle cx="100" cy="100" r="96" fill="url(#hbg)"/>
-			<!-- Seam lines — volleyball 3-panel pattern -->
-			<path d="M8,100 C22,42 178,42 192,100"   stroke="#7B5C28" stroke-width="3.5" fill="none" stroke-linecap="round" clip-path="url(#hbc)"/>
-			<path d="M8,100 C22,158 178,158 192,100"  stroke="#7B5C28" stroke-width="3.5" fill="none" stroke-linecap="round" clip-path="url(#hbc)"/>
-			<path d="M100,4   C66,30 134,170 100,196" stroke="#7B5C28" stroke-width="3.5" fill="none" stroke-linecap="round" clip-path="url(#hbc)"/>
-			<!-- Edge shadow -->
-			<circle cx="100" cy="100" r="96" fill="url(#hbg2)"/>
-			<!-- Rim -->
-			<circle cx="100" cy="100" r="96" stroke="#9E7C45" stroke-width="1.5" fill="none"/>
-			<!-- Highlight -->
-			<ellipse cx="72" cy="62" rx="22" ry="14" fill="rgba(255,255,255,0.18)" transform="rotate(-25 72 62)"/>
-		</svg>
+		<img src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/img/beach-volley-hero.webp" alt="" loading="eager">
 	</div>
 
 	<div class="container">
 		<div class="hero-content sotb-fade-in">
 			<span class="section-kicker" aria-label="Beach Volley, Sport da Spiaggia, Lifestyle">
-				<svg class="kicker-ball" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-					<defs>
-						<radialGradient id="kbg" cx="38%" cy="32%" r="65%">
-							<stop offset="0%"   stop-color="#EDD9A3"/>
-							<stop offset="55%"  stop-color="#D4B483"/>
-							<stop offset="100%" stop-color="#9E7C45"/>
-						</radialGradient>
-						<clipPath id="kbc"><circle cx="10" cy="10" r="9"/></clipPath>
-					</defs>
-					<circle cx="10" cy="10" r="9" fill="url(#kbg)"/>
-					<path d="M1,10 C2.5,4.5 17.5,4.5 19,10"  stroke="#7B5C28" stroke-width="1.2" fill="none" stroke-linecap="round" clip-path="url(#kbc)"/>
-					<path d="M1,10 C2.5,15.5 17.5,15.5 19,10" stroke="#7B5C28" stroke-width="1.2" fill="none" stroke-linecap="round" clip-path="url(#kbc)"/>
-					<path d="M10,1 C7,4 13,16 10,19" stroke="#7B5C28" stroke-width="1.2" fill="none" stroke-linecap="round" clip-path="url(#kbc)"/>
-					<circle cx="10" cy="10" r="9" stroke="#9E7C45" stroke-width="0.8" fill="none"/>
-				</svg>
+				<img class="kicker-ball" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/img/beach-volley-hero.webp" alt="" aria-hidden="true">
 				Beach Volley &nbsp;•&nbsp; Sport da Spiaggia &nbsp;•&nbsp; Lifestyle
 			</span>
 
@@ -107,23 +67,7 @@ get_header();
 		<div class="pillars-grid">
 			<div class="pillar-card sotb-fade-in">
 				<span class="pillar-icon" aria-hidden="true">
-					<!-- Beach Volleyball SVG -->
-					<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-						<defs>
-							<radialGradient id="pb1" cx="38%" cy="32%" r="65%">
-								<stop offset="0%"   stop-color="#EDD9A3"/>
-								<stop offset="55%"  stop-color="#D4B483"/>
-								<stop offset="100%" stop-color="#9E7C45"/>
-							</radialGradient>
-							<clipPath id="pc1"><circle cx="24" cy="24" r="22"/></clipPath>
-						</defs>
-						<circle cx="24" cy="24" r="22" fill="url(#pb1)"/>
-						<path d="M2,24 C5.5,10 42.5,10 46,24"  stroke="#7B5C28" stroke-width="2" fill="none" stroke-linecap="round" clip-path="url(#pc1)"/>
-						<path d="M2,24 C5.5,38 42.5,38 46,24"  stroke="#7B5C28" stroke-width="2" fill="none" stroke-linecap="round" clip-path="url(#pc1)"/>
-						<path d="M24,2 C16,10 32,38 24,46"     stroke="#7B5C28" stroke-width="2" fill="none" stroke-linecap="round" clip-path="url(#pc1)"/>
-						<circle cx="24" cy="24" r="22" stroke="#9E7C45" stroke-width="1" fill="none"/>
-						<ellipse cx="18" cy="15" rx="5" ry="3.5" fill="rgba(255,255,255,0.22)" transform="rotate(-25 18 15)"/>
-					</svg>
+					<img src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/img/beach-volley-hero.webp" alt="">
 				</span>
 				<h3>Beach Volley</h3>
 				<p>Il mondo del beach volley italiano raccontato da chi lo vive ogni giorno sulla sabbia.</p>

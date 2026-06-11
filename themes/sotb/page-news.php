@@ -38,7 +38,7 @@ if ( ! $posts_query->have_posts() && $cat ) {
 ?>
 
 <!-- PAGE HERO -->
-<section class="page-hero" aria-labelledby="news-heading">
+<section class="page-hero news-hero" aria-labelledby="news-heading">
 	<div class="container">
 		<nav class="breadcrumb" aria-label="Breadcrumb">
 			<a href="<?php echo esc_url( home_url( '/' ) ); ?>">Home</a>
@@ -53,7 +53,7 @@ if ( ! $posts_query->have_posts() && $cat ) {
 </section>
 
 <!-- NEWS SECTION -->
-<section class="section section--dark" aria-label="Lista news">
+<section class="section news-list-section" aria-label="Lista news">
 	<div class="container">
 
 		<?php if ( $posts_query->have_posts() ) : ?>
@@ -75,8 +75,8 @@ if ( ! $posts_query->have_posts() && $cat ) {
 				'format'    => '?paged=%#%',
 				'current'   => max( 1, $paged ),
 				'total'     => $posts_query->max_num_pages,
-				'prev_text' => '&#8592; Prev',
-				'next_text' => 'Next &#8594;',
+				'prev_text' => '&#8592; Precedente',
+				'next_text' => 'Successivo &#8594;',
 				'type'      => 'list',
 			) );
 
@@ -92,20 +92,7 @@ if ( ! $posts_query->have_posts() && $cat ) {
 			<!-- Empty state -->
 			<div class="empty-state sotb-fade-in">
 				<span class="empty-state-icon" aria-hidden="true">
-					<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:52px;height:52px;">
-						<defs>
-							<radialGradient id="epb" cx="38%" cy="32%" r="65%">
-								<stop offset="0%" stop-color="#EDD9A3"/>
-								<stop offset="55%" stop-color="#D4B483"/>
-								<stop offset="100%" stop-color="#9E7C45"/>
-							</radialGradient>
-							<clipPath id="epc"><circle cx="24" cy="24" r="22"/></clipPath>
-						</defs>
-						<circle cx="24" cy="24" r="22" fill="url(#epb)"/>
-						<path d="M2,24 C5.5,10 42.5,10 46,24" stroke="#7B5C28" stroke-width="2" fill="none" stroke-linecap="round" clip-path="url(#epc)"/>
-						<path d="M2,24 C5.5,38 42.5,38 46,24" stroke="#7B5C28" stroke-width="2" fill="none" stroke-linecap="round" clip-path="url(#epc)"/>
-						<path d="M24,2 C16,10 32,38 24,46" stroke="#7B5C28" stroke-width="2" fill="none" stroke-linecap="round" clip-path="url(#epc)"/>
-					</svg>
+					<?php echo sotb_get_ball_image_html( 'empty-state-ball', 'eager' ); ?>
 				</span>
 				<h3>Prossimamente</h3>
 				<p>Le news arriveranno presto. Torna a trovarci — grandi storie dal mondo del beach volley italiano ti aspettano!</p>

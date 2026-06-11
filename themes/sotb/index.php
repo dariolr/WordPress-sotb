@@ -42,7 +42,7 @@ get_header();
 		<?php else : ?>
 
 			<div class="empty-state">
-				<span class="empty-state-icon">🏐</span>
+				<span class="empty-state-icon" aria-hidden="true"><?php echo sotb_get_ball_image_html( 'empty-state-ball', 'eager' ); ?></span>
 				<h3>Nessun contenuto trovato</h3>
 				<p>Non sono stati trovati articoli. Torna a trovarci presto!</p>
 			</div>

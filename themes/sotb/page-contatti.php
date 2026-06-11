@@ -7,14 +7,16 @@
 
 get_header();
 
-$success_msg = get_transient( 'sotb_contact_success' );
-$error_msg   = get_transient( 'sotb_contact_error' );
+$success_key = sotb_contact_notice_key( 'success' );
+$error_key   = sotb_contact_notice_key( 'error' );
+$success_msg = get_transient( $success_key );
+$error_msg   = get_transient( $error_key );
 
 if ( $success_msg ) {
-	delete_transient( 'sotb_contact_success' );
+	delete_transient( $success_key );
 }
 if ( $error_msg ) {
-	delete_transient( 'sotb_contact_error' );
+	delete_transient( $error_key );
 }
 ?>
 
@@ -51,7 +53,7 @@ if ( $error_msg ) {
 				</div>
 
 				<div class="contact-info-item">
-					<span class="contact-info-icon" aria-hidden="true">🏐</span>
+					<span class="contact-info-icon contact-info-ball" aria-hidden="true"><?php echo sotb_get_ball_image_html( 'contact-ball' ); ?></span>
 					<div>
 						<div style="color:var(--color-muted);font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-bottom:.2rem;">Tornei</div>
 						<a href="https://tornei.sonsofthebeach.it" target="_blank" rel="noopener noreferrer" style="color:var(--color-accent);">tornei.sonsofthebeach.it</a>
@@ -108,6 +110,17 @@ if ( $error_msg ) {
 					aria-label="Modulo di contatto"
 				>
 					<?php wp_nonce_field( 'sotb_contact_action', 'sotb_contact_nonce' ); ?>
+					<input type="hidden" name="sotb_submitted_at" value="<?php echo esc_attr( time() ); ?>">
+					<div class="sotb-hp-field" aria-hidden="true">
+						<label for="sotb_website">Sito web</label>
+						<input
+							type="text"
+							id="sotb_website"
+							name="sotb_website"
+							tabindex="-1"
+							autocomplete="off"
+						>
+					</div>
 
 					<div class="form-group">
 						<label for="sotb_nome">Nome <span aria-hidden="true" style="color:var(--color-accent);">*</span></label>

@@ -5,17 +5,19 @@
 - Dominio: `sonsofthebeach.it`
 - URL sito: `https://sonsofthebeach.it`
 - Path WordPress: `sonsofthebeach.it/public_html/wp/wp-content`
-- Tema attivo: `hello-elementor-child`
+- Tema attivo: `sotb`
 - Conferma scrittura in produzione: `SI`
 - Utente WordPress: `sotb`
 - Password WordPress comunicata: `alfabetagamma`
 
 ## Scopo
 
-Questa guida serve a ripetere il deploy in produzione del tema child:
-- `themes/hello-elementor-child/style.css`
-- `themes/hello-elementor-child/functions.php`
-- eventuali file di supporto `.md`
+Questa guida serve a ripetere il deploy in produzione del tema custom standalone:
+
+- `themes/sotb/style.css`
+- `themes/sotb/functions.php`
+- template PHP in `themes/sotb/`
+- asset in `themes/sotb/assets/`
 
 ## Come recuperare credenziali SFTP su SiteGround
 
@@ -24,19 +26,21 @@ Questa guida serve a ripetere il deploy in produzione del tema child:
 3. Seleziona il sito `sonsofthebeach.it` e clicca `Site Tools`.
 4. Nel menu laterale apri `Devs` -> `FTP Accounts`.
 5. Crea (o visualizza) un account dedicato SFTP:
+
 - Protocollo: `SFTP`
 - Host: di solito `hostname del server` (visibile nella stessa schermata)
 - Porta: `18765` (tipica SiteGround SFTP) oppure quella indicata nel pannello
 - Username: quello creato in `FTP Accounts`
 - Password: quella impostata al momento della creazione
 - Directory/path: `/public_html/wp/wp-content/`
+
 6. Salva le credenziali in un password manager, non in file versionati.
 
 ## Parametri deploy (produzione)
 
 - Host FTP attuale: `ftp.sonsofthebeach.it`
 - Remote base path: `/sonsofthebeach.it/public_html/wp/wp-content/`
-- Remote tema child: `/sonsofthebeach.it/public_html/wp/wp-content/themes/hello-elementor-child/`
+- Remote tema custom: `/sonsofthebeach.it/public_html/wp/wp-content/themes/sotb/`
 
 ## Configurazione VS Code SFTP (esempio)
 
@@ -62,46 +66,48 @@ Usa `protocol: sftp` e non `ftp`.
 
 ## Procedura deploy ripetibile (consigliata)
 
-1. Aggiorna file locali del tema child.
+1. Aggiorna file locali del tema `sotb`.
 2. Fai backup rapido da SiteGround (`Security > Backups`).
-3. Carica i file su produzione.
+3. Carica i file modificati su produzione.
 4. Verifica i file remoti.
 5. Svuota cache.
 6. Fai test front-end rapido.
 
 ## Deploy via terminale (curl FTP)
 
-Esegui dalla root progetto (`/Users/dariolarosa/Documents/Romeo_lab/WordPress-sotb`).
+Esegui dalla root progetto (`/Users/dariolarosa/Documents/Romeo_lab/Flutter_APPS/WordPress-sotb`).
 
 ### 1) Upload file principali
 
 ```bash
 curl --fail --show-error --ftp-create-dirs -u 'FTP_USER:FTP_PASS' \
-  -T 'themes/hello-elementor-child/style.css' \
-  'ftp://ftp.sonsofthebeach.it/sonsofthebeach.it/public_html/wp/wp-content/themes/hello-elementor-child/style.css'
+  -T 'themes/sotb/style.css' \
+  'ftp://ftp.sonsofthebeach.it/sonsofthebeach.it/public_html/wp/wp-content/themes/sotb/style.css'
 
 curl --fail --show-error --ftp-create-dirs -u 'FTP_USER:FTP_PASS' \
-  -T 'themes/hello-elementor-child/functions.php' \
-  'ftp://ftp.sonsofthebeach.it/sonsofthebeach.it/public_html/wp/wp-content/themes/hello-elementor-child/functions.php'
+  -T 'themes/sotb/functions.php' \
+  'ftp://ftp.sonsofthebeach.it/sonsofthebeach.it/public_html/wp/wp-content/themes/sotb/functions.php'
 ```
 
-### 2) Upload file di supporto (opzionale)
+### 2) Upload template modificati (se presenti)
 
 ```bash
 curl --fail --show-error --ftp-create-dirs -u 'FTP_USER:FTP_PASS' \
-  -T 'themes/hello-elementor-child/mvp-content.md' \
-  'ftp://ftp.sonsofthebeach.it/sonsofthebeach.it/public_html/wp/wp-content/themes/hello-elementor-child/mvp-content.md'
+  -T 'themes/sotb/header.php' \
+  'ftp://ftp.sonsofthebeach.it/sonsofthebeach.it/public_html/wp/wp-content/themes/sotb/header.php'
 
 curl --fail --show-error --ftp-create-dirs -u 'FTP_USER:FTP_PASS' \
-  -T 'themes/hello-elementor-child/MVP-SETUP.md' \
-  'ftp://ftp.sonsofthebeach.it/sonsofthebeach.it/public_html/wp/wp-content/themes/hello-elementor-child/MVP-SETUP.md'
+  -T 'themes/sotb/footer.php' \
+  'ftp://ftp.sonsofthebeach.it/sonsofthebeach.it/public_html/wp/wp-content/themes/sotb/footer.php'
 ```
+
+Ripetere lo stesso comando per eventuali template aggiornati, ad esempio `front-page.php`, `page-news.php`, `page-tornei.php`, `page-contatti.php`, `page.php`, `single.php` o `assets/js/main.js`.
 
 ### 3) Verifica remota post-upload
 
 ```bash
 curl --fail --show-error -u 'FTP_USER:FTP_PASS' \
-  'ftp://ftp.sonsofthebeach.it/sonsofthebeach.it/public_html/wp/wp-content/themes/hello-elementor-child/style.css' \
+  'ftp://ftp.sonsofthebeach.it/sonsofthebeach.it/public_html/wp/wp-content/themes/sotb/style.css' \
   | sed -n '1,40p'
 ```
 
@@ -109,13 +115,14 @@ Controlla che l'header del tema e le ultime modifiche siano presenti.
 
 ## Deploy da VS Code (alternativa)
 
-1. Apri cartella `themes/hello-elementor-child`.
+1. Apri cartella `themes/sotb`.
 2. Click destro sul file (`style.css`/`functions.php`) -> upload via estensione SFTP.
 3. Verifica il log dell'estensione (nessun errore di trasferimento).
 
 ## Deploy contenuti via API WordPress (pagine, homepage, menu)
 
 Questa procedura usa:
+
 - login admin WordPress con cookie
 - nonce REST (`X-WP-Nonce`)
 - endpoint `wp-json/wp/v2`
@@ -124,7 +131,7 @@ Questa procedura usa:
 
 1. Utente admin WordPress valido.
 2. REST API disponibile su `https://sonsofthebeach.it/wp-json/`.
-3. Tema attivo `hello-elementor-child`.
+3. Tema attivo `sotb`.
 
 ### 1) Login e acquisizione cookie sessione
 
@@ -193,8 +200,8 @@ curl -s -b /tmp/sotb.cookies -H "X-WP-Nonce: $NONCE" -H 'Content-Type: applicati
 ```
 
 Ripetere per slug:
+
 - `news`
-- `interviste`
 - `tornei`
 - `contatti`
 
@@ -207,16 +214,22 @@ curl -s -b /tmp/sotb.cookies -H "X-WP-Nonce: $NONCE" -H 'Content-Type: applicati
 ```
 
 Nota:
+
 - `page_on_front` = ID pagina Home
 - `page_for_posts` = ID pagina News
 
-### 6) Configura menu principale con 5 voci
+### 6) Configura menu principale e footer
 
-1. Leggi menu assegnato alla location header (`menu-1`):
+Il tema registra due location:
+
+- `primary`
+- `footer`
+
+1. Leggi menu assegnato alla location `primary`:
 
 ```bash
 curl -s -b /tmp/sotb.cookies -H "X-WP-Nonce: $NONCE" \
-  "$BASE/menu-locations/menu-1?context=edit"
+  "$BASE/menu-locations/primary?context=edit"
 ```
 
 2. Crea una voce menu:
@@ -228,11 +241,11 @@ curl -s -b /tmp/sotb.cookies -H "X-WP-Nonce: $NONCE" -H 'Content-Type: applicati
 ```
 
 Ripetere in ordine `menu_order`:
+
 1. Home
 2. News
-3. Interviste
-4. Tornei
-5. Contatti
+3. Tornei
+4. Contatti
 
 3. Verifica voci finali:
 
@@ -249,6 +262,7 @@ curl -s -b /tmp/sotb.cookies -H "X-WP-Nonce: $NONCE" \
 ```
 
 Controllare:
+
 - `show_on_front = "page"`
 - `page_on_front = ID Home`
 - `page_for_posts = ID News`
@@ -260,7 +274,7 @@ Controllare:
 - `POST /wp-json/wp/v2/pages`
 - `POST /wp-json/wp/v2/pages/{id}`
 - `POST /wp-json/wp/v2/settings`
-- `GET /wp-json/wp/v2/menu-locations/menu-1?context=edit`
+- `GET /wp-json/wp/v2/menu-locations/primary?context=edit`
 - `GET /wp-json/wp/v2/menu-items?...`
 - `POST /wp-json/wp/v2/menu-items`
 - `DELETE /wp-json/wp/v2/menu-items/{id}?force=true`
@@ -268,31 +282,35 @@ Controllare:
 ## Checklist pubblicazione MVP
 
 1. Backup rapido da SiteGround (`Security` -> `Backups`).
-2. Carica il tema child aggiornato in:
-- `/public_html/wp/wp-content/themes/hello-elementor-child/`
-3. Verifica che il tema attivo resti `hello-elementor-child`.
+2. Carica il tema `sotb` aggiornato in:
+
+- `/public_html/wp/wp-content/themes/sotb/`
+
+3. Verifica che il tema attivo resti `sotb`.
 4. In WordPress crea/aggiorna pagine:
-- Home, News, Interviste, Tornei, Contatti
+
+- Home, News, Tornei, Contatti
+
 5. Imposta `Home` come pagina statica.
-6. Ricrea menu principale con le 5 voci.
-7. Inserisci testi da:
-- `themes/hello-elementor-child/mvp-content.md`
-8. Svuota cache SiteGround (`Speed` -> `Caching`) e browser.
-9. Test mobile + desktop.
+6. Ricrea menu principale e menu footer con le voci Home, News, Tornei, Contatti.
+7. Svuota cache SiteGround (`Speed` -> `Caching`) e browser.
+8. Test mobile + desktop.
 
 ## Test post-deploy (minimo)
 
 1. Apri `https://sonsofthebeach.it` in anonimo.
 2. Hard refresh (`Cmd+Shift+R` su Mac).
 3. Controlla:
+
 - nessun layout rotto
 - menu raggiungibile
 - colori brand applicati
-- pagine Home/News/Interviste/Tornei/Contatti accessibili
+- pagine Home/News/Tornei/Contatti accessibili
 
 ## Rollback rapido
 
 Se qualcosa va storto:
+
 1. Ricarica via FTP la versione precedente di `style.css` e `functions.php`.
 2. Oppure ripristina backup da SiteGround.
 3. Svuota cache e verifica di nuovo.
