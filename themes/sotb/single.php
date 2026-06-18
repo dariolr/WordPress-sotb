@@ -10,25 +10,37 @@ get_header();
 if ( have_posts() ) :
 	the_post();
 
-	$thumb_id  = get_post_thumbnail_id();
-	$thumb_url = $thumb_id ? wp_get_attachment_image_url( $thumb_id, 'sotb-hero' ) : '';
-	$author    = get_the_author();
-	$date      = get_the_date( 'd F Y' );
-	$cats      = get_the_category();
-	$cat_name  = ! empty( $cats ) ? esc_html( $cats[0]->name ) : 'News';
+	$thumb_id = get_post_thumbnail_id();
+	$author   = get_the_author();
+	$date     = get_the_date( 'd F Y' );
+	$cats     = get_the_category();
+	$cat_name = ! empty( $cats ) ? esc_html( $cats[0]->name ) : 'News';
 ?>
+
+<?php if ( $thumb_id ) : ?>
+	<section class="single-featured-media" aria-label="Immagine in evidenza">
+		<div class="container">
+			<figure class="single-featured-frame">
+				<?php
+				echo wp_get_attachment_image(
+					$thumb_id,
+					'full',
+					false,
+					array(
+						'class'    => 'single-featured-image',
+						'loading'  => 'eager',
+						'decoding' => 'async',
+						'sizes'    => '(min-width: 1200px) 1100px, calc(100vw - 40px)',
+					)
+				);
+				?>
+			</figure>
+		</div>
+	</section>
+<?php endif; ?>
 
 <!-- SINGLE HERO -->
 <header class="single-hero" aria-labelledby="post-title">
-	<div
-		class="single-hero-bg"
-		<?php if ( $thumb_url ) : ?>
-		style="background-image: url('<?php echo esc_url( $thumb_url ); ?>');"
-		role="img"
-		aria-label="<?php echo esc_attr( get_the_title() ); ?>"
-		<?php endif; ?>
-	></div>
-
 	<div class="container single-hero-content">
 		<!-- Breadcrumb -->
 		<nav class="breadcrumb" aria-label="Breadcrumb" style="margin-bottom:1rem;">
