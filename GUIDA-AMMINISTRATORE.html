@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <title>Guida amministratore - Sons of the Beach</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 18mm 16mm;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: #171a24;
+      background: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      font-size: 10.5pt;
+      line-height: 1.45;
+    }
+
+    h1,
+    h2,
+    h3,
+    p,
+    ul,
+    ol {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 5mm;
+      color: #5a6496;
+      font-size: 23pt;
+      line-height: 1.08;
+    }
+
+    h2 {
+      margin: 8mm 0 2.5mm;
+      padding-bottom: 1.5mm;
+      border-bottom: 1px solid #d9dce8;
+      color: #303542;
+      font-size: 14pt;
+    }
+
+    h3 {
+      margin: 4mm 0 1.5mm;
+      color: #303542;
+      font-size: 11.5pt;
+    }
+
+    p {
+      margin-bottom: 2.5mm;
+    }
+
+    ul,
+    ol {
+      margin-bottom: 3mm;
+      padding-left: 6mm;
+    }
+
+    li {
+      margin-bottom: 1.2mm;
+    }
+
+    code {
+      padding: 0.3mm 1mm;
+      border-radius: 2mm;
+      background: #f2f3f7;
+      color: #303542;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 9.5pt;
+    }
+
+    .cover {
+      margin-bottom: 7mm;
+      padding: 7mm;
+      border: 1px solid #d9dce8;
+      border-radius: 4mm;
+      background: #fbf8f1;
+    }
+
+    .cover p {
+      max-width: 160mm;
+      margin-bottom: 0;
+      color: #4b4f5c;
+      font-size: 11pt;
+    }
+
+    .meta {
+      display: grid;
+      grid-template-columns: 36mm 1fr;
+      gap: 1.5mm 4mm;
+      margin-top: 5mm;
+      color: #4b4f5c;
+      font-size: 9.8pt;
+    }
+
+    .meta strong {
+      color: #171a24;
+    }
+
+    .note,
+    .warning,
+    .ok {
+      margin: 4mm 0;
+      padding: 3.5mm 4mm;
+      border-radius: 3mm;
+      page-break-inside: avoid;
+    }
+
+    .note {
+      border: 1px solid #d9dce8;
+      background: #f7f8fb;
+    }
+
+    .warning {
+      border: 1px solid #e6c88c;
+      background: #fff8e8;
+    }
+
+    .ok {
+      border: 1px solid #cdd7bd;
+      background: #f3f8ed;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6mm;
+    }
+
+    .card {
+      margin-bottom: 4mm;
+      padding: 4mm;
+      border: 1px solid #d9dce8;
+      border-radius: 3mm;
+      page-break-inside: avoid;
+    }
+
+    .card h3 {
+      margin-top: 0;
+    }
+
+    .small {
+      color: #666b78;
+      font-size: 9.2pt;
+    }
+
+    .checklist li {
+      list-style-type: square;
+    }
+
+    .page-break {
+      page-break-before: always;
+    }
+  </style>
+</head>
+<body>
+  <section class="cover">
+    <h1>Guida amministratore<br>Sons of the Beach</h1>
+    <p>
+      Manuale operativo per amministrare il sito WordPress in produzione:
+      contenuti, pagine, menu, media, utenti, manutenzione e pubblicazione del tema.
+    </p>
+    <div class="meta">
+      <strong>Sito</strong><span>https://sonsofthebeach.it</span>
+      <strong>Admin</strong><span>https://sonsofthebeach.it/wp/wp-admin/</span>
+      <strong>Tema attivo</strong><span><code>sotb</code></span>
+      <strong>Versione guida</strong><span>18 giugno 2026</span>
+    </div>
+  </section>
+
+  <div class="warning">
+    <strong>Credenziali:</strong> non inserirle in questa guida. Consegnare utente e password
+    con un canale separato e sicuro. Ogni amministratore deve avere un proprio account personale.
+  </div>
+
+  <h2>1. Responsabilita dell'amministratore</h2>
+  <ul>
+    <li>Pubblicare, correggere e archiviare contenuti del sito.</li>
+    <li>Gestire media, menu, utenti e impostazioni principali di WordPress.</li>
+    <li>Controllare che il sito resti navigabile dopo ogni modifica.</li>
+    <li>Richiedere backup prima di interventi importanti.</li>
+    <li>Non modificare codice del tema direttamente dall'editor WordPress in produzione.</li>
+  </ul>
+
+  <h2>2. Accesso al pannello</h2>
+  <ol>
+    <li>Aprire <code>https://sonsofthebeach.it/wp/wp-admin/</code>.</li>
+    <li>Inserire utente e password dell'account amministratore.</li>
+    <li>Se richiesto, completare eventuali controlli di sicurezza.</li>
+    <li>Dopo l'accesso verificare di essere nella <strong>Bacheca</strong> WordPress.</li>
+  </ol>
+
+  <div class="note">
+    Se il login non funziona, non provare molte password a caso. Usare il recupero password
+    oppure chiedere il reset a chi gestisce hosting e account amministrativi.
+  </div>
+
+  <h2>3. Cosa si modifica dal pannello WordPress</h2>
+  <div class="two-col">
+    <div class="card">
+      <h3>News e articoli</h3>
+      <p>Da <strong>Articoli</strong> si creano e aggiornano le news. Sono i contenuti editoriali principali.</p>
+      <ul>
+        <li>titolo</li>
+        <li>testo articolo</li>
+        <li>immagine in evidenza</li>
+        <li>categorie e tag</li>
+        <li>stato bozza/pubblicato</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Media</h3>
+      <p>Da <strong>Media</strong> si caricano immagini e file usati negli articoli.</p>
+      <ul>
+        <li>preferire immagini ottimizzate</li>
+        <li>usare nomi file leggibili</li>
+        <li>compilare testo alternativo quando l'immagine ha valore informativo</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Pagine</h3>
+      <p>Da <strong>Pagine</strong> si vedono Home, News, Tornei e Contatti.</p>
+      <p class="small">Attenzione: nel tema attuale molte sezioni sono gestite da template PHP, non dal contenuto editor della pagina.</p>
+    </div>
+    <div class="card">
+      <h3>Menu</h3>
+      <p>Da <strong>Aspetto &gt; Menu</strong> si modificano le voci di navigazione, se WordPress mostra il menu attivo.</p>
+      <p class="small">Voci previste: Home, News, Tornei, Contatti.</p>
+    </div>
+  </div>
+
+  <h2>4. Gestione news</h2>
+  <h3>Creare una news</h3>
+  <ol>
+    <li>Entrare in <strong>Articoli &gt; Aggiungi nuovo</strong>.</li>
+    <li>Scrivere il titolo esattamente come deve comparire sul sito.</li>
+    <li>Inserire il testo nel corpo dell'articolo.</li>
+    <li>Aggiungere immagine in evidenza dalla colonna laterale.</li>
+    <li>Assegnare categoria <strong>News</strong>, se presente.</li>
+    <li>Salvare come bozza o pubblicare.</li>
+    <li>Controllare il risultato su <code>/news/</code> e nella pagina dettaglio.</li>
+  </ol>
+
+  <h3>Regole editoriali essenziali</h3>
+  <ul>
+    <li>Non scrivere titoli tutti in maiuscolo salvo sigle o nomi ufficiali.</li>
+    <li>Usare paragrafi brevi e sottotitoli quando l'articolo e lungo.</li>
+    <li>Non incollare testo da Word mantenendo formattazioni strane: se necessario usare "incolla come testo".</li>
+    <li>Controllare sempre mobile e desktop dopo la pubblicazione.</li>
+  </ul>
+
+  <div class="ok">
+    Il tema non forza piu il maiuscolo sui titoli delle news: titolo, sottotitoli e testo
+    vengono mostrati rispettando la scrittura inserita in WordPress.
+  </div>
+
+  <h2>5. Pagine principali del sito</h2>
+  <div class="card">
+    <h3>Home</h3>
+    <p>
+      La Home e gestita dal template <code>front-page.php</code>. Dal pannello WordPress
+      si puo vedere la pagina, ma testi, sezioni e layout principali richiedono modifica del tema.
+    </p>
+  </div>
+  <div class="card">
+    <h3>News</h3>
+    <p>
+      La pagina News mostra automaticamente gli articoli pubblicati. Le card usano titolo,
+      estratto, data, categoria e immagine in evidenza dell'articolo.
+    </p>
+  </div>
+  <div class="card">
+    <h3>Tornei</h3>
+    <p>
+      La pagina Tornei usa il template <code>page-tornei.php</code>. Modifiche a testi,
+      blocchi o link principali richiedono intervento sul tema.
+    </p>
+  </div>
+  <div class="card">
+    <h3>Contatti</h3>
+    <p>
+      La pagina Contatti usa il template <code>page-contatti.php</code>. Il form invia verso
+      l'email amministrativa impostata in WordPress.
+    </p>
+  </div>
+
+  <h2 class="page-break">6. Utenti e permessi</h2>
+  <ul>
+    <li><strong>Amministratore:</strong> accesso completo. Usarlo solo per persone fidate.</li>
+    <li><strong>Editore:</strong> puo gestire contenuti e articoli, ma non impostazioni critiche.</li>
+    <li><strong>Autore/Collaboratore:</strong> utile per chi scrive contenuti senza gestire il sito.</li>
+  </ul>
+
+  <h3>Creare un nuovo utente</h3>
+  <ol>
+    <li>Aprire <strong>Utenti &gt; Aggiungi nuovo</strong>.</li>
+    <li>Inserire email personale dell'utente.</li>
+    <li>Assegnare il ruolo minimo necessario.</li>
+    <li>Inviare le credenziali tramite canale sicuro.</li>
+  </ol>
+
+  <div class="warning">
+    Non condividere un unico account amministratore tra piu persone. Rende impossibile capire chi ha fatto una modifica.
+  </div>
+
+  <h2>7. Media e immagini</h2>
+  <ul>
+    <li>Usare immagini in formato JPG, PNG o WebP.</li>
+    <li>Prima del caricamento ridurre immagini molto grandi: per le news spesso basta una larghezza tra 1600 e 2200 px.</li>
+    <li>Evitare file chiamati <code>IMG_1234.jpg</code>; usare nomi come <code>torneo-roma-giugno-2026.jpg</code>.</li>
+    <li>Non caricare immagini protette da diritti se non autorizzate.</li>
+    <li>Per immagini informative compilare il campo <strong>Testo alternativo</strong>.</li>
+  </ul>
+
+  <h2>8. Manutenzione ordinaria</h2>
+  <ul class="checklist">
+    <li>Controllare periodicamente che Home, News, Tornei e Contatti rispondano correttamente.</li>
+    <li>Prima di aggiornare plugin, tema o WordPress, fare backup.</li>
+    <li>Aggiornare un elemento alla volta e ricontrollare il sito.</li>
+    <li>Dopo modifiche importanti, svuotare eventuale cache del sito/hosting.</li>
+    <li>Non installare plugin non necessari: ogni plugin aumenta manutenzione e rischio.</li>
+  </ul>
+
+  <h2>9. Backup e sicurezza</h2>
+  <ul>
+    <li>Prima di modifiche strutturali creare un backup da SiteGround o dal sistema di backup disponibile.</li>
+    <li>Conservare almeno un backup recente prima di aggiornamenti importanti.</li>
+    <li>Usare password robuste e uniche.</li>
+    <li>Rimuovere utenti non piu attivi.</li>
+    <li>Non modificare file del tema dall'editor integrato di WordPress.</li>
+  </ul>
+
+  <h2>10. Modifiche al tema e pubblicazione</h2>
+  <p>
+    Il sito usa un tema custom chiamato <code>sotb</code>. Layout, colori, pallone grafico,
+    struttura Home/Tornei/Contatti e diversi dettagli visivi sono nel codice del tema.
+  </p>
+
+  <h3>Quando serve intervento tecnico</h3>
+  <ul>
+    <li>Modificare layout della Home.</li>
+    <li>Cambiare colori, font, spaziature o stile delle card.</li>
+    <li>Cambiare il pallone, logo o asset grafici del tema.</li>
+    <li>Modificare testi statici dentro Home, Tornei o Contatti.</li>
+    <li>Aggiungere nuove sezioni o template.</li>
+  </ul>
+
+  <h3>Deploy del tema</h3>
+  <p>
+    Se si lavora dal repository locale, la pubblicazione avviene con lo script:
+  </p>
+  <p><code>./scripts/deploy-production.sh</code></p>
+  <p>
+    Lo script controlla i file PHP, crea lo ZIP del tema, lo carica su WordPress,
+    sostituisce il tema esistente e verifica le pagine principali.
+  </p>
+
+  <div class="warning">
+    Lo script di deploy deve essere usato solo da chi gestisce il codice. Un amministratore
+    WordPress non tecnico dovrebbe limitarsi al pannello di amministrazione.
+  </div>
+
+  <h2>11. Checklist prima di chiudere un intervento</h2>
+  <ul class="checklist">
+    <li>Homepage aperta e corretta.</li>
+    <li>Pagina News aperta e corretta.</li>
+    <li>Almeno una pagina articolo controllata.</li>
+    <li>Pagina Tornei aperta e corretta.</li>
+    <li>Pagina Contatti aperta e form visibile.</li>
+    <li>Controllo rapido da smartphone o viewport mobile.</li>
+    <li>Nessuna password inviata via email o chat non sicura.</li>
+  </ul>
+
+  <h2>12. In caso di problema</h2>
+  <ol>
+    <li>Non continuare a fare modifiche casuali.</li>
+    <li>Annotare cosa e stato fatto e a che ora.</li>
+    <li>Se il problema nasce da un contenuto, riportarlo in bozza o correggerlo.</li>
+    <li>Se il problema nasce da tema/plugin/aggiornamento, ripristinare backup o coinvolgere chi gestisce il codice.</li>
+    <li>Verificare di nuovo Home, News, Tornei e Contatti.</li>
+  </ol>
+
+  <p class="small">
+    Documento operativo per amministratori del sito Sons of the Beach. Non contiene credenziali.
+  </p>
+</body>
+</html>
