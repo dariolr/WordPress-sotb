@@ -34,6 +34,7 @@ if ( have_posts() ) :
 					)
 				);
 				?>
+				<?php echo sotb_get_attachment_caption_html( $thumb_id, 'single-featured-caption' ); ?>
 			</figure>
 		</div>
 	</section>

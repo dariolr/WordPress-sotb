@@ -327,6 +327,75 @@ function sotb_get_ball_image_html( string $class = 'sotb-ball-icon', string $loa
 	return '<img class="' . esc_attr( $classes ) . '" src="' . esc_url( $ball_url ) . '" alt="" loading="' . esc_attr( $loading ) . '" decoding="async" aria-hidden="true">';
 }
 
+function sotb_get_attachment_caption_html( int $attachment_id, string $class = '' ): string {
+	$caption = wp_get_attachment_caption( $attachment_id );
+
+	if ( ! $caption ) {
+		return '';
+	}
+
+	$classes = trim( 'sotb-photo-caption ' . $class );
+
+	return '<figcaption class="' . esc_attr( $classes ) . '">' . wp_kses_post( $caption ) . '</figcaption>';
+}
+
+function sotb_add_media_library_captions_to_post_images( string $content ): string {
+	if ( is_admin() || ! is_singular( 'post' ) || false === strpos( $content, 'wp-image-' ) ) {
+		return $content;
+	}
+
+	$content = preg_replace_callback(
+		'/(<figure\b[^>]*class="[^"]*\bwp-block-image\b[^"]*"[^>]*>)(.*?)(<\/figure>)/is',
+		function ( array $matches ): string {
+			if ( false !== stripos( $matches[2], '<figcaption' ) ) {
+				return $matches[0];
+			}
+
+			if ( ! preg_match( '/\bwp-image-(\d+)\b/', $matches[2], $image_match ) ) {
+				return $matches[0];
+			}
+
+			$caption = sotb_get_attachment_caption_html( absint( $image_match[1] ), 'post-image-caption' );
+
+			if ( ! $caption ) {
+				return $matches[0];
+			}
+
+			return $matches[1] . $matches[2] . $caption . $matches[3];
+		},
+		$content
+	);
+
+	$parts = preg_split( '/(<figure\b.*?<\/figure>)/is', $content, -1, PREG_SPLIT_DELIM_CAPTURE );
+
+	if ( is_array( $parts ) ) {
+		foreach ( $parts as $index => $part ) {
+			if ( 1 === $index % 2 ) {
+				continue;
+			}
+
+			$parts[ $index ] = preg_replace_callback(
+				'/(<p>\s*)?(<img\b[^>]*class="[^"]*\bwp-image-(\d+)\b[^"]*"[^>]*>)(\s*<\/p>)?/is',
+				function ( array $matches ): string {
+					$caption = sotb_get_attachment_caption_html( absint( $matches[3] ), 'post-image-caption' );
+
+					if ( ! $caption ) {
+						return $matches[0];
+					}
+
+					return '<figure class="sotb-captioned-image">' . $matches[2] . $caption . '</figure>';
+				},
+				$part
+			);
+		}
+
+		$content = implode( '', $parts );
+	}
+
+	return $content;
+}
+add_filter( 'the_content', 'sotb_add_media_library_captions_to_post_images', 20 );
+
 /* ============================================================
    HELPER: WAVE SVG DIVIDER
    ============================================================ */
