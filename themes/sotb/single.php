@@ -15,6 +15,8 @@ if ( have_posts() ) :
 	$date     = get_the_date( 'd F Y' );
 	$cats     = get_the_category();
 	$cat_name = ! empty( $cats ) ? esc_html( $cats[0]->name ) : 'News';
+	$sports   = get_the_terms( get_the_ID(), 'sport' );
+	$sports   = is_array( $sports ) ? $sports : array();
 ?>
 
 <?php if ( $thumb_id ) : ?>
@@ -52,7 +54,12 @@ if ( have_posts() ) :
 			<span aria-current="page"><?php echo esc_html( wp_trim_words( get_the_title(), 6, '…' ) ); ?></span>
 		</nav>
 
-		<span class="card-category" style="margin-bottom:.75rem;"><?php echo $cat_name; ?></span>
+		<div class="card-badges" style="margin-bottom:.75rem;">
+			<span class="card-category"><?php echo $cat_name; ?></span>
+			<?php foreach ( $sports as $sport ) : ?>
+				<a href="<?php echo esc_url( get_term_link( $sport ) ); ?>" class="card-sport-badge"><?php echo esc_html( $sport->name ); ?></a>
+			<?php endforeach; ?>
+		</div>
 
 		<h1 id="post-title"><?php the_title(); ?></h1>
 
@@ -69,8 +76,11 @@ if ( have_posts() ) :
 			<span>
 				<?php
 				$tags = get_the_tags();
-				$tag_names = array_map( fn( $t ) => '#' . $t->name, array_slice( $tags, 0, 3 ) );
-				echo esc_html( implode( '  ', $tag_names ) );
+				$tag_links = array_map(
+					fn( $t ) => '<a href="' . esc_url( get_tag_link( $t->term_id ) ) . '">#' . esc_html( $t->name ) . '</a>',
+					$tags
+				);
+				echo implode( '  ', $tag_links ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				?>
 			</span>
 			<?php endif; ?>

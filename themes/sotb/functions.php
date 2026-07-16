@@ -101,6 +101,60 @@ function sotb_add_image_sizes() {
 add_action( 'after_setup_theme', 'sotb_add_image_sizes' );
 
 /* ============================================================
+   TASSONOMIA "SPORT"
+   ============================================================
+   Sons of the Beach copre più sport da spiaggia (beach volley,
+   footvolley, ecc.). Ogni news può essere etichettata con uno o
+   più sport, indipendentemente dalla categoria (che resta usata
+   per il tipo di contenuto, es. "News", "Interviste").
+   Nuove discipline si aggiungono da wp-admin → Sport, senza codice.
+   ============================================================ */
+function sotb_register_sport_taxonomy() {
+	register_taxonomy(
+		'sport',
+		'post',
+		array(
+			'labels'            => array(
+				'name'          => __( 'Sport', 'sotb' ),
+				'singular_name' => __( 'Sport', 'sotb' ),
+				'search_items'  => __( 'Cerca Sport', 'sotb' ),
+				'all_items'     => __( 'Tutti gli Sport', 'sotb' ),
+				'edit_item'     => __( 'Modifica Sport', 'sotb' ),
+				'update_item'   => __( 'Aggiorna Sport', 'sotb' ),
+				'add_new_item'  => __( 'Aggiungi nuovo Sport', 'sotb' ),
+				'new_item_name' => __( 'Nome nuovo Sport', 'sotb' ),
+				'menu_name'     => __( 'Sport', 'sotb' ),
+			),
+			'hierarchical'      => true,
+			'public'            => true,
+			'show_ui'           => true,
+			'show_admin_column' => true,
+			'show_in_rest'      => true,
+			'query_var'         => true,
+			'rewrite'           => array( 'slug' => 'sport' ),
+		)
+	);
+}
+add_action( 'init', 'sotb_register_sport_taxonomy' );
+
+/**
+ * Crea i termini di default alla prima esecuzione, se non esistono già.
+ * Da wp-admin → Articoli → Sport si possono aggiungere altre discipline in qualsiasi momento.
+ */
+function sotb_seed_default_sports() {
+	if ( get_option( 'sotb_sports_seeded' ) ) {
+		return;
+	}
+	foreach ( array( 'Beach Volley', 'Footvolley' ) as $sport_name ) {
+		if ( ! term_exists( $sport_name, 'sport' ) ) {
+			wp_insert_term( $sport_name, 'sport' );
+		}
+	}
+	update_option( 'sotb_sports_seeded', 1 );
+}
+add_action( 'init', 'sotb_seed_default_sports', 20 );
+
+/* ============================================================
    ENQUEUE SCRIPTS & STYLES
    ============================================================ */
 function sotb_enqueue_assets() {
@@ -173,7 +227,11 @@ add_filter( 'excerpt_more', 'sotb_excerpt_more' );
 /* ============================================================
    CUSTOM BODY CLASSES
    ============================================================ */
-function sotb_body_classes( $classes ) {
+/**
+ * @param string[] $classes
+ * @return string[]
+ */
+function sotb_body_classes( array $classes ): array {
 	if ( is_singular() ) {
 		$classes[] = 'sotb-singular';
 	}
@@ -440,6 +498,8 @@ function sotb_render_post_card( WP_Post $post, bool $placeholder = false ): void
 	$thumb_id   = get_post_thumbnail_id( $post );
 	$categories = get_the_category( $post->ID );
 	$cat_name   = ( ! empty( $categories ) ) ? esc_html( $categories[0]->name ) : 'News';
+	$sports     = get_the_terms( $post->ID, 'sport' );
+	$sports     = is_array( $sports ) ? $sports : array();
 	?>
 	<article class="card sotb-fade-in">
 		<div class="card-top-border"></div>
@@ -455,7 +515,12 @@ function sotb_render_post_card( WP_Post $post, bool $placeholder = false ): void
 			<?php endif; ?>
 		</div>
 		<div class="card-body">
-			<span class="card-category"><?php echo $cat_name; ?></span>
+			<div class="card-badges">
+				<span class="card-category"><?php echo $cat_name; ?></span>
+				<?php foreach ( $sports as $sport ) : ?>
+					<a href="<?php echo esc_url( get_term_link( $sport ) ); ?>" class="card-sport-badge"><?php echo esc_html( $sport->name ); ?></a>
+				<?php endforeach; ?>
+			</div>
 			<h3 class="card-title"><a href="<?php echo esc_url( $permalink ); ?>"><?php echo esc_html( $title ); ?></a></h3>
 			<?php if ( $excerpt ) : ?>
 				<p class="card-excerpt"><?php echo esc_html( $excerpt ); ?></p>
@@ -469,6 +534,141 @@ function sotb_render_post_card( WP_Post $post, bool $placeholder = false ): void
 					Leggi <span aria-hidden="true">→</span>
 				</a>
 			</div>
+		</div>
+	</article>
+	<?php
+}
+
+/* ============================================================
+   YOUTUBE — CUSTOMIZER SETTINGS
+   ============================================================
+   Aspetto → Personalizza → Video YouTube: API Key + Channel ID
+   (Google Cloud Console). La sezione "Ultimi Video" in home mostra
+   automaticamente gli ultimi caricamenti del canale.
+   ============================================================ */
+function sotb_customize_register( WP_Customize_Manager $wp_customize ) {
+	$wp_customize->add_section(
+		'sotb_youtube_section',
+		array(
+			'title'       => __( 'Video YouTube', 'sotb' ),
+			'priority'    => 160,
+			'description' => __( 'Configura la sezione "Ultimi Video" della home, alimentata dalla YouTube Data API.', 'sotb' ),
+		)
+	);
+
+	$wp_customize->add_setting(
+		'sotb_youtube_api_key',
+		array(
+			'default'           => '',
+			'sanitize_callback' => 'sanitize_text_field',
+		)
+	);
+	$wp_customize->add_control(
+		'sotb_youtube_api_key',
+		array(
+			'type'        => 'text',
+			'section'     => 'sotb_youtube_section',
+			'label'       => __( 'YouTube Data API Key', 'sotb' ),
+			'description' => __( 'Da Google Cloud Console (YouTube Data API v3). Se impostata insieme al Channel ID, mostra automaticamente gli ultimi video del canale.', 'sotb' ),
+		)
+	);
+
+	$wp_customize->add_setting(
+		'sotb_youtube_channel_id',
+		array(
+			'default'           => '',
+			'sanitize_callback' => 'sanitize_text_field',
+		)
+	);
+	$wp_customize->add_control(
+		'sotb_youtube_channel_id',
+		array(
+			'type'        => 'text',
+			'section'     => 'sotb_youtube_section',
+			'label'       => __( 'Channel ID (UC...)', 'sotb' ),
+			'description' => __( 'Su YouTube Studio: Impostazioni → Canale → Info di base.', 'sotb' ),
+		)
+	);
+}
+add_action( 'customize_register', 'sotb_customize_register' );
+
+/**
+ * Restituisce l'elenco degli ultimi video del canale, interrogando
+ * la YouTube Data API (risultato cachato). Restituisce un array vuoto
+ * se API Key/Channel ID non sono configurati o la chiamata fallisce.
+ *
+ * @return array<int, array{id: string, title: string, thumbnail: string, url: string}>
+ */
+function sotb_get_youtube_videos( int $max = 6 ): array {
+	$api_key    = get_theme_mod( 'sotb_youtube_api_key', '' );
+	$channel_id = get_theme_mod( 'sotb_youtube_channel_id', '' );
+
+	if ( ! $api_key || ! $channel_id ) {
+		return array();
+	}
+
+	$transient_key = 'sotb_yt_api_' . md5( $api_key . $channel_id . $max );
+	$cached        = get_transient( $transient_key );
+	if ( false !== $cached ) {
+		return $cached;
+	}
+
+	$uploads_playlist = 'UU' . substr( $channel_id, 2 );
+	$request_url       = add_query_arg(
+		array(
+			'part'       => 'snippet',
+			'playlistId' => $uploads_playlist,
+			'maxResults' => $max,
+			'key'        => $api_key,
+		),
+		'https://www.googleapis.com/youtube/v3/playlistItems'
+	);
+
+	$response = wp_remote_get( $request_url, array( 'timeout' => 8 ) );
+	$videos   = array();
+
+	if ( ! is_wp_error( $response ) && 200 === wp_remote_retrieve_response_code( $response ) ) {
+		$body = json_decode( wp_remote_retrieve_body( $response ), true );
+		foreach ( $body['items'] ?? array() as $item ) {
+			$snippet = $item['snippet'] ?? null;
+			$vid     = $snippet['resourceId']['videoId'] ?? '';
+			if ( ! $snippet || ! $vid ) {
+				continue;
+			}
+			$videos[] = array(
+				'id'        => $vid,
+				'title'     => $snippet['title'] ?? '',
+				'thumbnail' => $snippet['thumbnails']['high']['url'] ?? $snippet['thumbnails']['default']['url'] ?? '',
+				'url'       => 'https://www.youtube.com/watch?v=' . $vid,
+			);
+		}
+	}
+
+	if ( $videos ) {
+		set_transient( $transient_key, $videos, 12 * HOUR_IN_SECONDS );
+	}
+
+	return $videos;
+}
+
+/* ============================================================
+   HELPER: VIDEO CARD HTML
+   ============================================================ */
+function sotb_render_video_card( array $video ): void {
+	?>
+	<article class="card video-card sotb-fade-in">
+		<div class="card-top-border"></div>
+		<a class="card-image video-card-thumb" href="<?php echo esc_url( $video['url'] ); ?>" target="_blank" rel="noopener noreferrer" aria-label="<?php echo esc_attr( $video['title'] ); ?>">
+			<img src="<?php echo esc_url( $video['thumbnail'] ); ?>" alt="<?php echo esc_attr( $video['title'] ); ?>" loading="lazy">
+			<span class="video-play-icon" aria-hidden="true">
+				<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+			</span>
+		</a>
+		<div class="card-body">
+			<span class="card-category">YouTube</span>
+			<h3 class="card-title">
+				<a href="<?php echo esc_url( $video['url'] ); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html( $video['title'] ); ?></a>
+			</h3>
 		</div>
 	</article>
 	<?php

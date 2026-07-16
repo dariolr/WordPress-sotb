@@ -10,7 +10,7 @@
 	<?php
 	// Open Graph / Twitter Card
 	$og_title       = is_singular() ? get_the_title() . ' — Sons of the Beach' : 'Sons of the Beach';
-	$og_description = is_singular() ? wp_strip_all_tags( get_the_excerpt() ) : 'La voce autentica dello sport da spiaggia. News, tornei e tutto il beach volley italiano.';
+	$og_description = is_singular() ? wp_strip_all_tags( get_the_excerpt() ) : 'La voce autentica degli sport da spiaggia italiani. News, tornei e tutto il beach volley, footvolley e non solo.';
 	$og_url         = is_singular() ? get_permalink() : home_url( '/' );
 	$og_image       = get_template_directory_uri() . '/assets/img/og-image.png';
 	if ( is_singular() && has_post_thumbnail() ) {

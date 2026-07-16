@@ -29,8 +29,9 @@ get_header();
 			<h1 id="hero-heading">La voce autentica dello sport da spiaggia</h1>
 
 			<p class="hero-sub">
-				Sons of the Beach è il media di riferimento per il beach volley italiano: interviste ai protagonisti,
-				aggiornamenti dai tornei e tutto ciò che accade sulla sabbia.
+				Sons of the Beach è il media di riferimento per gli sport da spiaggia italiani: beach volley,
+				footvolley e non solo. Interviste ai protagonisti, aggiornamenti dai tornei e tutto ciò che
+				accade sulla sabbia.
 			</p>
 
 			<div class="btn-group">
@@ -60,8 +61,8 @@ get_header();
 	<div class="container">
 		<header class="section-header sotb-fade-in">
 			<span class="section-kicker">La nostra missione</span>
-			<h2 id="mission-heading">Tutto il mondo del beach volley</h2>
-			<p>Tre pilastri per raccontare lo sport da spiaggia in tutte le sue sfaccettature.</p>
+			<h2 id="mission-heading">Tutto il mondo degli sport da spiaggia</h2>
+			<p>Tre pilastri per raccontare beach volley, footvolley e le altre discipline sulla sabbia in tutte le loro sfaccettature.</p>
 		</header>
 
 		<div class="pillars-grid">
@@ -70,7 +71,7 @@ get_header();
 					<img src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/img/beach-volley-hero.webp" alt="">
 				</span>
 				<h3>Beach Volley</h3>
-				<p>Il mondo del beach volley italiano raccontato da chi lo vive ogni giorno sulla sabbia.</p>
+				<p>Il nostro sport di punta, raccontato da chi lo vive ogni giorno sulla sabbia — ma non l'unico di cui parliamo.</p>
 			</div>
 
 			<div class="pillar-card sotb-fade-in">
@@ -166,6 +167,41 @@ get_header();
 
 	</div>
 </section>
+
+<?php
+$sotb_videos = sotb_get_youtube_videos( 6 );
+if ( ! empty( $sotb_videos ) ) :
+	?>
+	<!-- Wave between sections -->
+	<div aria-hidden="true">
+		<svg viewBox="0 0 1440 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="display:block;width:100%;background:#12141E;">
+			<path d="M0,30 C480,60 960,0 1440,30 L1440,60 L0,60 Z" fill="#1C1F2E"/>
+		</svg>
+	</div>
+
+	<!-- ============================================================
+	     VIDEO YOUTUBE
+	     ============================================================ -->
+	<section class="section section--card" aria-labelledby="video-heading">
+		<div class="container">
+			<header class="section-header sotb-fade-in">
+				<span class="section-kicker">Dal canale YouTube</span>
+				<h2 id="video-heading">Ultimi Video</h2>
+				<p>Highlights, interviste e contenuti esclusivi direttamente dal nostro canale.</p>
+			</header>
+
+			<div class="video-grid">
+				<?php foreach ( $sotb_videos as $sotb_video ) : sotb_render_video_card( $sotb_video ); endforeach; ?>
+			</div>
+
+			<div style="text-align:center; margin-top:2.5rem;" class="sotb-fade-in">
+				<a href="https://youtube.com/@sonsofthebeach?si=ppYqCrPpy4aLxTEN" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">
+					Vai al canale YouTube →
+				</a>
+			</div>
+		</div>
+	</section>
+<?php endif; ?>
 
 <!-- ============================================================
      CTA TORNEI

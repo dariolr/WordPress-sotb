@@ -7,6 +7,11 @@
  */
 
 get_header();
+
+/**
+ * @var WP_Post $post
+ */
+global $post;
 ?>
 
 <!-- PAGE HERO -->
@@ -19,7 +24,7 @@ get_header();
 		</nav>
 		<h1 id="news-heading">News</h1>
 		<p style="color:var(--color-muted);margin-top:.75rem;font-size:1rem;">
-			Storie, interviste e aggiornamenti dal mondo del beach volley italiano.
+			Storie, interviste e aggiornamenti dal mondo degli sport da spiaggia — beach volley, footvolley e non solo.
 		</p>
 	</div>
 </section>
@@ -54,7 +59,7 @@ get_header();
 			<div class="empty-state sotb-fade-in">
 				<span class="empty-state-icon" aria-hidden="true"><?php echo sotb_get_ball_image_html( 'empty-state-ball', 'eager' ); ?></span>
 				<h3>Prossimamente</h3>
-				<p>Le news arriveranno presto. Torna a trovarci — grandi storie dal mondo del beach volley italiano ti aspettano!</p>
+				<p>Le news arriveranno presto. Torna a trovarci — grandi storie dal mondo degli sport da spiaggia ti aspettano!</p>
 				<div style="margin-top:1.75rem;">
 					<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="btn btn-secondary">← Torna alla home</a>
 				</div>

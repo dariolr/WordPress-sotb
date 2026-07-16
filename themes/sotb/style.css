@@ -670,6 +670,36 @@ body.nav-open .nav-mobile-overlay {
   margin-bottom: 0.75rem;
 }
 
+.card-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.card-badges .card-category {
+  margin-bottom: 0;
+}
+
+.card-sport-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #8A6D2F;
+  background: rgba(212, 180, 131, 0.22);
+  padding: 0.25rem 0.65rem;
+  border-radius: 100px;
+  text-decoration: none;
+  transition: background var(--transition), color var(--transition);
+}
+
+.card-sport-badge:hover {
+  background: var(--color-accent);
+  color: #1C1F2E;
+}
+
 .card-title {
   font-family: var(--font-heading);
   font-size: 1.35rem;
@@ -862,12 +892,88 @@ body.nav-open .nav-mobile-overlay {
 }
 
 /* ============================================================
+   SPORT FILTER (pagina News)
+   ============================================================ */
+.sport-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 2rem;
+}
+
+.sport-filter-pill {
+  display: inline-block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.5rem 1.1rem;
+  border-radius: 100px;
+  border: 1px solid var(--color-border);
+  color: var(--color-muted);
+  text-decoration: none;
+  transition: all var(--transition);
+}
+
+.news-list-section .sport-filter-pill {
+  border-color: rgba(90, 100, 150, 0.2);
+  color: #4B4F5C;
+}
+
+.sport-filter-pill:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.sport-filter-pill.is-active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+/* ============================================================
    INTERVIEW GRID
    ============================================================ */
 .interviews-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.5rem;
+}
+
+/* ============================================================
+   VIDEO GRID
+   ============================================================ */
+.video-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+.video-card-thumb {
+  display: block;
+}
+
+.video-play-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(28, 31, 46, 0.72);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition), transform var(--transition);
+}
+
+.video-play-icon svg {
+  margin-left: 2px;
+}
+
+.card:hover .video-play-icon {
+  background: var(--color-primary);
+  transform: translate(-50%, -50%) scale(1.08);
 }
 
 /* ============================================================
@@ -1409,6 +1515,11 @@ textarea.form-control {
   font-style: italic;
 }
 
+.post-body .wp-block-pullquote {
+  padding: 0.1rem 0;
+  margin-block: 0.1rem 1.5rem;
+}
+
 .editorial-single-content .post-body blockquote {
   background: #F4F0E8;
   color: #303542;
@@ -1627,6 +1738,10 @@ textarea.form-control {
     grid-template-columns: repeat(2, 1fr);
   }
 
+  .video-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
   .contatti-grid {
     grid-template-columns: 1fr 1fr;
   }
@@ -1652,6 +1767,10 @@ textarea.form-control {
    ============================================================ */
 @media (min-width: 1024px) {
   .interviews-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .video-grid {
     grid-template-columns: repeat(3, 1fr);
   }
 

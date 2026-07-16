@@ -6,12 +6,42 @@
  */
 
 get_header();
+
+/**
+ * @var WP_Query $wp_query
+ * @var WP_Post  $post
+ */
+global $wp_query, $post;
 ?>
 
 <section class="page-hero">
 	<div class="container">
-		<h1><?php bloginfo( 'name' ); ?></h1>
-		<p style="color:var(--color-muted);margin-top:.75rem;"><?php bloginfo( 'description' ); ?></p>
+		<?php if ( is_tag() ) : ?>
+			<h1><?php echo esc_html( '#' . single_tag_title( '', false ) ); ?></h1>
+			<p style="color:var(--color-muted);margin-top:.75rem;">
+				<?php
+				printf(
+					/* translators: %d: number of posts found */
+					esc_html( _n( '%d articolo trovato', '%d articoli trovati', $wp_query->found_posts, 'sotb' ) ),
+					(int) $wp_query->found_posts
+				);
+				?>
+			</p>
+		<?php elseif ( is_tax( 'sport' ) ) : ?>
+			<h1><?php echo esc_html( single_term_title( '', false ) ); ?></h1>
+			<p style="color:var(--color-muted);margin-top:.75rem;">
+				<?php
+				printf(
+					/* translators: %d: number of posts found */
+					esc_html( _n( '%d articolo trovato', '%d articoli trovati', $wp_query->found_posts, 'sotb' ) ),
+					(int) $wp_query->found_posts
+				);
+				?>
+			</p>
+		<?php else : ?>
+			<h1><?php bloginfo( 'name' ); ?></h1>
+			<p style="color:var(--color-muted);margin-top:.75rem;"><?php bloginfo( 'description' ); ?></p>
+		<?php endif; ?>
 	</div>
 </section>
 
