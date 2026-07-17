@@ -128,6 +128,12 @@ if ( have_posts() ) :
 				</div>
 			</footer>
 
+			<?php if ( comments_open() || get_comments_number() ) : ?>
+				<div class="sotb-comments">
+					<?php comments_template(); ?>
+				</div>
+			<?php endif; ?>
+
 		</div>
 	</div>
 </main>

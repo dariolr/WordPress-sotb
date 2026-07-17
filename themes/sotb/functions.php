@@ -182,6 +182,10 @@ function sotb_enqueue_assets() {
 		$version,
 		true
 	);
+
+	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
+		wp_enqueue_script( 'comment-reply' );
+	}
 }
 add_action( 'wp_enqueue_scripts', 'sotb_enqueue_assets' );
 
@@ -495,6 +499,7 @@ function sotb_render_post_card( WP_Post $post, bool $placeholder = false ): void
 	$title      = get_the_title( $post );
 	$excerpt    = get_the_excerpt( $post );
 	$date       = get_the_date( 'd M Y', $post );
+	$author     = get_the_author_meta( 'display_name', $post->post_author );
 	$thumb_id   = get_post_thumbnail_id( $post );
 	$categories = get_the_category( $post->ID );
 	$cat_name   = ( ! empty( $categories ) ) ? esc_html( $categories[0]->name ) : 'News';
@@ -526,9 +531,17 @@ function sotb_render_post_card( WP_Post $post, bool $placeholder = false ): void
 				<p class="card-excerpt"><?php echo esc_html( $excerpt ); ?></p>
 			<?php endif; ?>
 			<div class="card-meta">
-				<span class="card-date">
-					<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-					<?php echo esc_html( $date ); ?>
+				<span class="card-meta-info">
+					<?php if ( $author ) : ?>
+						<span class="card-author">
+							<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+							<?php echo esc_html( $author ); ?>
+						</span>
+					<?php endif; ?>
+					<span class="card-date">
+						<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+						<?php echo esc_html( $date ); ?>
+					</span>
 				</span>
 				<a href="<?php echo esc_url( $permalink ); ?>" class="card-read-more">
 					Leggi <span aria-hidden="true">→</span>
@@ -652,6 +665,35 @@ function sotb_get_youtube_videos( int $max = 6 ): array {
 }
 
 /* ============================================================
+   REST API — VIDEO ENDPOINT (per la app Flutter)
+   ============================================================
+   GET /wp-json/sotb/v1/videos — restituisce gli ultimi video del
+   canale YouTube già cachati lato server. Nessuna API key esposta
+   al client: la app chiama solo questo endpoint pubblico in lettura.
+   ============================================================ */
+function sotb_register_rest_routes() {
+	register_rest_route(
+		'sotb/v1',
+		'/videos',
+		array(
+			'methods'             => WP_REST_Server::READABLE,
+			'permission_callback' => '__return_true',
+			'args'                => array(
+				'max' => array(
+					'default'           => 6,
+					'sanitize_callback' => 'absint',
+				),
+			),
+			'callback'            => function ( WP_REST_Request $request ) {
+				$max = max( 1, min( 20, (int) $request->get_param( 'max' ) ) );
+				return rest_ensure_response( sotb_get_youtube_videos( $max ) );
+			},
+		)
+	);
+}
+add_action( 'rest_api_init', 'sotb_register_rest_routes' );
+
+/* ============================================================
    HELPER: VIDEO CARD HTML
    ============================================================ */
 function sotb_render_video_card( array $video ): void {
@@ -671,5 +713,71 @@ function sotb_render_video_card( array $video ): void {
 			</h3>
 		</div>
 	</article>
+	<?php
+}
+
+/* ============================================================
+   ANTISPAM COMMENTI (honeypot + tempo minimo di compilazione)
+   Prima linea di difesa, prima ancora di Antispam Bee.
+   ============================================================ */
+function sotb_comment_honeypot_check( array $commentdata ): array {
+	if ( ! empty( $_POST['sotb_c_website'] ) ) {
+		wp_die( esc_html__( 'Richiesta non valida.', 'sotb' ) );
+	}
+
+	$submitted_at = isset( $_POST['sotb_c_time'] ) ? absint( $_POST['sotb_c_time'] ) : 0;
+	if ( ! $submitted_at || ( time() - $submitted_at ) < 3 ) {
+		wp_die( esc_html__( 'Richiesta troppo veloce, riprova.', 'sotb' ) );
+	}
+
+	return $commentdata;
+}
+add_filter( 'preprocess_comment', 'sotb_comment_honeypot_check' );
+
+/* ============================================================
+   HELPER: COMMENT HTML (callback per wp_list_comments)
+   ============================================================ */
+function sotb_render_comment( WP_Comment $comment, array $args, int $depth ): void {
+	$tag = ( 'div' === $args['style'] ) ? 'div' : 'li';
+	?>
+	<<?php echo esc_html( $tag ); ?> id="comment-<?php comment_ID(); ?>" <?php comment_class( 'sotb-comment' ); ?>>
+		<article class="sotb-comment-body">
+			<div class="sotb-comment-avatar">
+				<?php echo get_avatar( $comment, $args['avatar_size'] ); ?>
+			</div>
+			<div class="sotb-comment-content">
+				<div class="sotb-comment-meta">
+					<span class="sotb-comment-author"><?php comment_author(); ?></span>
+					<span class="sotb-comment-date">
+						<a href="<?php echo esc_url( get_comment_link( $comment, $args ) ); ?>">
+							<?php echo esc_html( get_comment_date( 'd M Y', $comment ) ); ?>
+						</a>
+					</span>
+				</div>
+
+				<?php if ( '0' === $comment->comment_approved ) : ?>
+					<p class="sotb-comment-awaiting-moderation"><?php esc_html_e( 'Il tuo commento è in attesa di moderazione.', 'sotb' ); ?></p>
+				<?php endif; ?>
+
+				<div class="sotb-comment-text">
+					<?php comment_text(); ?>
+				</div>
+
+				<?php
+				comment_reply_link(
+					array_merge(
+						$args,
+						array(
+							'reply_text' => __( 'Rispondi', 'sotb' ),
+							'depth'      => $depth,
+							'max_depth'  => $args['max_depth'],
+							'before'     => '<div class="sotb-comment-reply">',
+							'after'      => '</div>',
+						)
+					)
+				);
+				?>
+			</div>
+		</article>
 	<?php
 }
