@@ -6,11 +6,8 @@ LOCAL_DIR="$ROOT_DIR/.local-wordpress"
 DEPLOY_DIR="$LOCAL_DIR/deploy"
 COOKIE_FILE="$LOCAL_DIR/prod.cookies"
 THEME_SLUG="${THEME_SLUG:-sotb}"
-SITE_URL="${SITE_URL:-https://sonsofthebeach.it}"
-WP_LOGIN_PATH="${WP_LOGIN_PATH:-/wp/wp-login.php}"
-WP_ADMIN_PATH="${WP_ADMIN_PATH:-/wp/wp-admin}"
 
-# Carica credenziali da file non versionato (se presente)
+# Carica configurazione da file non versionato (se presente)
 SECRETS_FILE="$ROOT_DIR/.env.secrets"
 if [ -f "$SECRETS_FILE" ]; then
   set -a
@@ -18,25 +15,27 @@ if [ -f "$SECRETS_FILE" ]; then
   set +a
 fi
 
+SITE_URL="${SITE_URL:-}"
+WP_LOGIN_PATH="${WP_LOGIN_PATH:-}"
+WP_ADMIN_PATH="${WP_ADMIN_PATH:-}"
 WP_USER="${WP_USER:-}"
 WP_PASS="${WP_PASS:-}"
 THEME_DIR="$ROOT_DIR/themes/$THEME_SLUG"
 ZIP_FILE="$DEPLOY_DIR/$THEME_SLUG.zip"
 
-if [ -z "$WP_USER" ] || [ -z "$WP_PASS" ]; then
+if [ -z "$SITE_URL" ] || [ -z "$WP_USER" ] || [ -z "$WP_PASS" ]; then
   cat >&2 <<'MSG'
-Missing credentials.
+Missing configuration.
 
 Create a .env.secrets file in the project root with:
+  SITE_URL='https://tuodominio.it'
+  WP_LOGIN_PATH='/wp/wp-login.php'
+  WP_ADMIN_PATH='/wp/wp-admin'
   WP_USER='tuo_utente_wp'
   WP_PASS='tua_password_wp'
 
 Or override via environment variables:
-  WP_USER='...' WP_PASS='...' ./scripts/deploy-production.sh
-
-Optional variables:
-  SITE_URL='https://sonsofthebeach.it'
-  THEME_SLUG='sotb'
+  SITE_URL='...' WP_USER='...' WP_PASS='...' ./scripts/deploy-production.sh
 MSG
   exit 1
 fi
