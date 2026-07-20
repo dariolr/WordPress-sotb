@@ -9,16 +9,29 @@ THEME_SLUG="${THEME_SLUG:-sotb}"
 SITE_URL="${SITE_URL:-https://sonsofthebeach.it}"
 WP_LOGIN_PATH="${WP_LOGIN_PATH:-/wp/wp-login.php}"
 WP_ADMIN_PATH="${WP_ADMIN_PATH:-/wp/wp-admin}"
-WP_USER="${WP_USER:-sotb}"
-WP_PASS="${WP_PASS:-alfabetagamma}"
+
+# Carica credenziali da file non versionato (se presente)
+SECRETS_FILE="$ROOT_DIR/.env.secrets"
+if [ -f "$SECRETS_FILE" ]; then
+  set -a
+  . "$SECRETS_FILE"
+  set +a
+fi
+
+WP_USER="${WP_USER:-}"
+WP_PASS="${WP_PASS:-}"
 THEME_DIR="$ROOT_DIR/themes/$THEME_SLUG"
 ZIP_FILE="$DEPLOY_DIR/$THEME_SLUG.zip"
 
-if [ -z "${WP_USER:-}" ] || [ -z "${WP_PASS:-}" ]; then
+if [ -z "$WP_USER" ] || [ -z "$WP_PASS" ]; then
   cat >&2 <<'MSG'
 Missing credentials.
 
-Configure WP_USER and WP_PASS in scripts/deploy-production.sh or run with:
+Create a .env.secrets file in the project root with:
+  WP_USER='tuo_utente_wp'
+  WP_PASS='tua_password_wp'
+
+Or override via environment variables:
   WP_USER='...' WP_PASS='...' ./scripts/deploy-production.sh
 
 Optional variables:

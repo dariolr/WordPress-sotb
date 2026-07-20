@@ -8,7 +8,7 @@
 - Tema attivo: `sotb`
 - Conferma scrittura in produzione: `SI`
 - Utente WordPress: `sotb`
-- Password WordPress comunicata: `alfabetagamma`
+- Password WordPress comunicata: `LA_TUA_PASSWORD`
 
 ## Scopo
 
@@ -247,7 +247,7 @@ Ripetere in ordine `menu_order`:
 3. Tornei
 4. Contatti
 
-3. Verifica voci finali:
+5. Verifica voci finali:
 
 ```bash
 curl -s -b /tmp/sotb.cookies -H "X-WP-Nonce: $NONCE" \
