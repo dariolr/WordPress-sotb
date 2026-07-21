@@ -23,6 +23,7 @@ if ( have_posts() ) :
 	<section class="single-featured-media" aria-label="Immagine in evidenza">
 		<div class="container">
 			<figure class="single-featured-frame">
+				<div class="single-featured-image-wrap">
 				<?php
 				echo wp_get_attachment_image(
 					$thumb_id,
@@ -36,6 +37,8 @@ if ( have_posts() ) :
 					)
 				);
 				?>
+				<?php echo sotb_get_attachment_credit_html( $thumb_id ); ?>
+				</div>
 				<?php echo sotb_get_attachment_caption_html( $thumb_id, 'single-featured-caption' ); ?>
 			</figure>
 		</div>

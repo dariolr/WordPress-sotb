@@ -23,15 +23,13 @@ get_header();
 		<div class="hero-content sotb-fade-in">
 			<span class="section-kicker" aria-label="Beach Volley, Sport da Spiaggia, Lifestyle">
 				<img class="kicker-ball" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/img/beach-volley-hero.webp" alt="" aria-hidden="true">
-				Beach Volley &nbsp;•&nbsp; Sport da Spiaggia &nbsp;•&nbsp; Lifestyle
+				NEWS &nbsp;•&nbsp; INTERVISTE &nbsp;•&nbsp; PODCAST &nbsp;•&nbsp; VIDEO	
 			</span>
 
-			<h1 id="hero-heading">La voce autentica dello sport da spiaggia</h1>
+			<h1 id="hero-heading">Il media degli sport da spiaggia</h1>
 
 			<p class="hero-sub">
-				Sons of the Beach è il media di riferimento per gli sport da spiaggia italiani: beach volley,
-				footvolley e non solo. Interviste ai protagonisti, aggiornamenti dai tornei e tutto ciò che
-				accade sulla sabbia.
+				Ogni giorno raccontiamo i protagonisti, gli eventi e le storie che nascono sulla sabbia. Beach volley, footvolley, beach tennis, FootTable e molto altro, con articoli, video, podcast e contenuti esclusivi..
 			</p>
 
 			<div class="btn-group">
@@ -128,9 +126,9 @@ get_header();
 		</header>
 
 		<?php
-		// Query last 3 posts
+		// Query last 6 posts
 		$recent_posts = new WP_Query( array(
-			'posts_per_page'      => 3,
+			'posts_per_page'      => 6,
 			'post_status'         => 'publish',
 			'ignore_sticky_posts' => true,
 			'no_found_rows'       => true,

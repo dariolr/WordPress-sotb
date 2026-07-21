@@ -53,7 +53,7 @@ $posts_query = new WP_Query( $query_args );
 // If category-filtered query returns nothing (e non c'è un filtro sport attivo), fall back to all posts
 if ( ! $posts_query->have_posts() && $cat && ! $active_sport ) {
 	$posts_query = new WP_Query( array(
-		'posts_per_page' => 9,
+	'posts_per_page' => 9,
 		'paged'          => $paged,
 		'post_status'    => 'publish',
 	) );

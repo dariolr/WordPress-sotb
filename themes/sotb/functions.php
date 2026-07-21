@@ -389,6 +389,46 @@ function sotb_get_ball_image_html( string $class = 'sotb-ball-icon', string $loa
 	return '<img class="' . esc_attr( $classes ) . '" src="' . esc_url( $ball_url ) . '" alt="" loading="' . esc_attr( $loading ) . '" decoding="async" aria-hidden="true">';
 }
 
+/* ============================================================
+   MEDIA CREDIT (overlay sulle immagini)
+   ============================================================ */
+
+/** Aggiunge il campo "Credit" alla libreria media */
+function sotb_attachment_credit_fields( array $form_fields, WP_Post $post ): array {
+	$form_fields['sotb_image_credit'] = array(
+		'label' => __( 'Credits', 'sotb' ),
+		'input' => 'text',
+		'value' => get_post_meta( $post->ID, '_sotb_image_credit', true ),
+		'helps' => __( 'Crediti fotografici (es. "Foto: FIVB")', 'sotb' ),
+	);
+	return $form_fields;
+}
+add_filter( 'attachment_fields_to_edit', 'sotb_attachment_credit_fields', 10, 2 );
+
+/** Salva il campo Credit */
+function sotb_attachment_credit_save( array $post, array $attachment ): array {
+	if ( isset( $attachment['sotb_image_credit'] ) ) {
+		update_post_meta( $post['ID'], '_sotb_image_credit', sanitize_text_field( $attachment['sotb_image_credit'] ) );
+	}
+	return $post;
+}
+add_filter( 'attachment_fields_to_save', 'sotb_attachment_credit_save', 10, 2 );
+
+/** Recupera l'HTML del credit overlay */
+function sotb_get_attachment_credit_html( int $attachment_id ): string {
+	$credit = get_post_meta( $attachment_id, '_sotb_image_credit', true );
+
+	if ( ! $credit ) {
+		return '';
+	}
+
+	return '<span class="sotb-image-credit">' . esc_html( $credit ) . '</span>';
+}
+
+/* ============================================================
+   MEDIA CAPTION
+   ============================================================ */
+
 function sotb_get_attachment_caption_html( int $attachment_id, string $class = '' ): string {
 	$caption = wp_get_attachment_caption( $attachment_id );
 
@@ -400,6 +440,29 @@ function sotb_get_attachment_caption_html( int $attachment_id, string $class = '
 
 	return '<figcaption class="' . esc_attr( $classes ) . '">' . wp_kses_post( $caption ) . '</figcaption>';
 }
+
+/** Aggiunge credit overlay alle immagini nei contenuti degli articoli */
+function sotb_add_credit_overlay_to_post_images( string $content ): string {
+	if ( is_admin() || ! is_singular( 'post' ) || false === strpos( $content, 'wp-image-' ) ) {
+		return $content;
+	}
+
+	// Aggiunge credit overlay a TUTTE le immagini con wp-image-N, dentro o fuori figure
+	$content = preg_replace_callback(
+		'/(<img\b[^>]*class="[^"]*\bwp-image-(\d+)\b[^"]*"[^>]*>)/is',
+		function ( array $matches ): string {
+			$credit = sotb_get_attachment_credit_html( absint( $matches[2] ) );
+			if ( ! $credit ) {
+				return $matches[0];
+			}
+			return $matches[1] . $credit;
+		},
+		$content
+	);
+
+	return $content;
+}
+add_filter( 'the_content', 'sotb_add_credit_overlay_to_post_images', 25 );
 
 function sotb_add_media_library_captions_to_post_images( string $content ): string {
 	if ( is_admin() || ! is_singular( 'post' ) || false === strpos( $content, 'wp-image-' ) ) {
@@ -513,6 +576,7 @@ function sotb_render_post_card( WP_Post $post, bool $placeholder = false ): void
 				<a href="<?php echo esc_url( $permalink ); ?>" tabindex="-1" aria-hidden="true">
 					<?php echo wp_get_attachment_image( $thumb_id, 'sotb-card', false, array( 'alt' => esc_attr( $title ) ) ); ?>
 				</a>
+				<?php echo sotb_get_attachment_credit_html( $thumb_id ); ?>
 			<?php else : ?>
 				<a href="<?php echo esc_url( $permalink ); ?>" tabindex="-1" aria-hidden="true">
 					<div class="card-image-placeholder"><?php echo sotb_get_ball_image_html( 'card-placeholder-ball', 'eager' ); ?></div>
