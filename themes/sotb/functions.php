@@ -9,6 +9,36 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+require_once get_template_directory() . '/admin-scuole-location.php';
+
+/**
+ * Sezione Tornei temporaneamente disabilitata (non eliminata): mettere a
+ * true per far ricomparire la voce di menu, i riferimenti in homepage, il
+ * blocco in Contatti e la pagina /tornei/ stessa.
+ */
+define( 'SOTB_TORNEI_ENABLED', false );
+
+/**
+ * Nasconde la voce "Tornei" anche quando in Aspetto → Menu è assegnato un
+ * menu vero e proprio (non il fallback PHP di sotb_primary_menu_fallback/
+ * sotb_footer_menu_fallback, che coprono solo il caso senza menu salvato).
+ */
+function sotb_maybe_hide_tornei_menu_item( array $items ): array {
+	if ( SOTB_TORNEI_ENABLED ) {
+		return $items;
+	}
+
+	return array_values(
+		array_filter(
+			$items,
+			static function ( $item ) {
+				return false === strpos( $item->url, '/tornei/' );
+			}
+		)
+	);
+}
+add_filter( 'wp_nav_menu_objects', 'sotb_maybe_hide_tornei_menu_item' );
+
 /* ============================================================
    THEME SETUP
    ============================================================ */
@@ -88,6 +118,63 @@ function sotb_setup() {
 add_action( 'after_setup_theme', 'sotb_setup' );
 
 /* ============================================================
+   MOBILE → APP REDIRECT
+   Sends mobile visitors landing on the homepage straight to the
+   deployed Flutter web app instead of the WordPress front page.
+   ============================================================ */
+function sotb_maybe_redirect_mobile_to_app() {
+	// Only the homepage: article/page links shared and opened on mobile
+	// should keep working in the browser (the app has no deep-linking
+	// for individual posts yet).
+	if ( ! is_front_page() ) {
+		return;
+	}
+
+	if ( is_admin() || wp_doing_ajax() || wp_doing_cron() || is_feed() ) {
+		return;
+	}
+
+	if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+		return;
+	}
+
+	// Never redirect the app itself, in case rewrite rules ever route
+	// that path through WordPress.
+	if ( 0 === strpos( $_SERVER['REQUEST_URI'] ?? '', '/sotb/app' ) ) {
+		return;
+	}
+
+	// Escape hatch: ?sito=1 lets a mobile visitor stay on the WP site
+	// (e.g. to read it in the browser) for the rest of the session.
+	if ( isset( $_GET['sito'] ) ) {
+		setcookie( 'sotb_no_app_redirect', '1', time() + DAY_IN_SECONDS, '/' );
+		return;
+	}
+
+	if ( isset( $_COOKIE['sotb_no_app_redirect'] ) ) {
+		return;
+	}
+
+	if ( ! wp_is_mobile() ) {
+		return;
+	}
+
+	// Don't redirect search engine / social-preview crawlers: they need
+	// to keep indexing and scraping the actual WordPress homepage.
+	$user_agent = $_SERVER['HTTP_USER_AGENT'] ?? '';
+	if ( preg_match( '/bot|crawl|spider|slurp|facebookexternalhit|whatsapp|telegrambot|preview/i', $user_agent ) ) {
+		return;
+	}
+
+	// The redirect depends on the User-Agent, so tell caches/CDNs not to
+	// serve this response to a different kind of visitor.
+	header( 'Vary: User-Agent' );
+	wp_redirect( 'https://www.sonsofthebeach.it/sotb/app', 302 );
+	exit;
+}
+add_action( 'template_redirect', 'sotb_maybe_redirect_mobile_to_app' );
+
+/* ============================================================
    THUMBNAIL SIZES
    ============================================================ */
 function sotb_add_image_sizes() {
@@ -136,6 +223,22 @@ function sotb_register_sport_taxonomy() {
 	);
 }
 add_action( 'init', 'sotb_register_sport_taxonomy' );
+
+/**
+ * Le rewrite rules di WordPress non si aggiornano da sole quando si
+ * registra una tassonomia con uno slug personalizzato via codice: senza
+ * un flush, i link /sport/<slug>/ restano 404 finché qualcuno non salva
+ * manualmente Impostazioni → Permalink in wp-admin. Lo facciamo qui in
+ * automatico, una sola volta (flush è costoso, non va fatto ad ogni
+ * richiesta).
+ */
+function sotb_maybe_flush_sport_rewrite_rules() {
+	if ( ! get_option( 'sotb_sport_rewrite_flushed' ) ) {
+		flush_rewrite_rules();
+		update_option( 'sotb_sport_rewrite_flushed', 1 );
+	}
+}
+add_action( 'init', 'sotb_maybe_flush_sport_rewrite_rules', 20 );
 
 /**
  * Crea i termini di default alla prima esecuzione, se non esistono già.
@@ -260,12 +363,14 @@ function sotb_primary_menu_fallback( $args = null ): void {
 		   <?php if ( is_page( 'news' ) || ( is_single() && in_category( 'news' ) ) ) echo 'class="current-menu-item" aria-current="page"'; ?>>
 			News
 		</a>
+		<?php if ( SOTB_TORNEI_ENABLED ) : ?>
 		<a href="<?php echo esc_url( home_url( '/tornei/' ) ); ?>" role="menuitem"
 		   <?php if ( is_page( 'tornei' ) ) echo 'class="current-menu-item" aria-current="page"'; ?>>
 			Tornei
 		</a>
-		<a href="<?php echo esc_url( home_url( '/contatti/' ) ); ?>" class="nav-cta" role="menuitem"
-		   <?php if ( is_page( 'contatti' ) ) echo 'aria-current="page"'; ?>>
+		<?php endif; ?>
+		<a href="<?php echo esc_url( home_url( '/contatti/' ) ); ?>" role="menuitem"
+		   <?php if ( is_page( 'contatti' ) ) echo 'class="current-menu-item" aria-current="page"'; ?>>
 			Contatti
 		</a>
 	</div>
@@ -277,7 +382,9 @@ function sotb_footer_menu_fallback( $args = null ): void {
 	<nav class="footer-nav" aria-label="<?php esc_attr_e( 'Footer Navigation', 'sotb' ); ?>">
 		<a href="<?php echo esc_url( home_url( '/' ) ); ?>">Home</a>
 		<a href="<?php echo esc_url( home_url( '/news/' ) ); ?>">News</a>
+		<?php if ( SOTB_TORNEI_ENABLED ) : ?>
 		<a href="<?php echo esc_url( home_url( '/tornei/' ) ); ?>">Tornei</a>
+		<?php endif; ?>
 		<a href="<?php echo esc_url( home_url( '/contatti/' ) ); ?>">Contatti</a>
 	</nav>
 	<?php
@@ -286,10 +393,6 @@ function sotb_footer_menu_fallback( $args = null ): void {
 function sotb_nav_menu_link_attributes( array $atts, WP_Post $menu_item, stdClass $args ): array {
 	if ( isset( $args->theme_location ) && 'primary' === $args->theme_location ) {
 		$atts['role'] = 'menuitem';
-
-		if ( isset( $atts['href'] ) && false !== strpos( $atts['href'], '/contatti/' ) ) {
-			$atts['class'] = isset( $atts['class'] ) ? $atts['class'] . ' nav-cta' : 'nav-cta';
-		}
 	}
 
 	return $atts;
@@ -443,7 +546,13 @@ function sotb_get_attachment_caption_html( int $attachment_id, string $class = '
 
 /** Aggiunge credit overlay alle immagini nei contenuti degli articoli */
 function sotb_add_credit_overlay_to_post_images( string $content ): string {
-	if ( is_admin() || ! is_singular( 'post' ) || false === strpos( $content, 'wp-image-' ) ) {
+	// is_singular( 'post' ) è vero solo quando WordPress sta renderizzando la
+	// pagina dell'articolo nel front-end classico: le richieste REST (usate
+	// dalla web app Flutter per leggere content.rendered) non impostano mai
+	// quella condizione, quindi senza questo OR i crediti non arrivavano mai
+	// all'app.
+	$is_rest_request = defined( 'REST_REQUEST' ) && REST_REQUEST;
+	if ( is_admin() || ( ! is_singular( 'post' ) && ! $is_rest_request ) || false === strpos( $content, 'wp-image-' ) ) {
 		return $content;
 	}
 
@@ -666,6 +775,32 @@ function sotb_customize_register( WP_Customize_Manager $wp_customize ) {
 			'description' => __( 'Su YouTube Studio: Impostazioni → Canale → Info di base.', 'sotb' ),
 		)
 	);
+
+	$wp_customize->add_section(
+		'sotb_social_section',
+		array(
+			'title'       => __( 'Social / SEO', 'sotb' ),
+			'priority'    => 165,
+			'description' => __( 'Impostazioni usate nei meta tag Open Graph (condivisione su Facebook/WhatsApp).', 'sotb' ),
+		)
+	);
+
+	$wp_customize->add_setting(
+		'sotb_facebook_app_id',
+		array(
+			'default'           => '',
+			'sanitize_callback' => 'sanitize_text_field',
+		)
+	);
+	$wp_customize->add_control(
+		'sotb_facebook_app_id',
+		array(
+			'type'        => 'text',
+			'section'     => 'sotb_social_section',
+			'label'       => __( 'Facebook App ID', 'sotb' ),
+			'description' => __( 'Da developers.facebook.com (crea una "App" gratuita di tipo Business). Risolve l\'avviso "fb:app_id mancante" nel Facebook Sharing Debugger; non è richiesto perché le anteprime funzionino.', 'sotb' ),
+		)
+	);
 }
 add_action( 'customize_register', 'sotb_customize_register' );
 
@@ -676,6 +811,25 @@ add_action( 'customize_register', 'sotb_customize_register' );
  *
  * @return array<int, array{id: string, title: string, thumbnail: string, url: string}>
  */
+/** Strips decorative emoji (e.g. a channel prefixing titles with 🎙️) from
+ * video titles pulled from YouTube, so cards show clean text only. */
+function sotb_strip_emoji( string $text ): string {
+	$stripped = preg_replace(
+		'/[\x{1F1E6}-\x{1F1FF}\x{1F300}-\x{1FAFF}\x{2600}-\x{27BF}\x{2190}-\x{21FF}\x{2B00}-\x{2BFF}\x{FE0F}\x{200D}]/u',
+		'',
+		$text
+	);
+	return trim( $stripped ?? $text );
+}
+
+/** Cache key shared by every caller, regardless of the requested $max, so
+ * there's a single, predictable entry to refresh/purge. */
+function sotb_youtube_cache_key(): string {
+	return 'sotb_yt_api_' . md5(
+		get_theme_mod( 'sotb_youtube_api_key', '' ) . get_theme_mod( 'sotb_youtube_channel_id', '' )
+	);
+}
+
 function sotb_get_youtube_videos( int $max = 6 ): array {
 	$api_key    = get_theme_mod( 'sotb_youtube_api_key', '' );
 	$channel_id = get_theme_mod( 'sotb_youtube_channel_id', '' );
@@ -684,49 +838,78 @@ function sotb_get_youtube_videos( int $max = 6 ): array {
 		return array();
 	}
 
-	$transient_key = 'sotb_yt_api_' . md5( $api_key . $channel_id . $max );
+	// One shared cache entry (fetching a generous batch of videos) instead
+	// of one per requested $max: a single, predictable key to purge, and
+	// fewer YouTube API calls overall.
+	$fetch_count   = 20;
+	$transient_key = sotb_youtube_cache_key();
 	$cached        = get_transient( $transient_key );
-	if ( false !== $cached ) {
-		return $cached;
-	}
 
-	$uploads_playlist = 'UU' . substr( $channel_id, 2 );
-	$request_url       = add_query_arg(
-		array(
-			'part'       => 'snippet',
-			'playlistId' => $uploads_playlist,
-			'maxResults' => $max,
-			'key'        => $api_key,
-		),
-		'https://www.googleapis.com/youtube/v3/playlistItems'
-	);
+	if ( false === $cached ) {
+		$uploads_playlist = 'UU' . substr( $channel_id, 2 );
+		$request_url      = add_query_arg(
+			array(
+				'part'       => 'snippet',
+				'playlistId' => $uploads_playlist,
+				'maxResults' => $fetch_count,
+				'key'        => $api_key,
+			),
+			'https://www.googleapis.com/youtube/v3/playlistItems'
+		);
 
-	$response = wp_remote_get( $request_url, array( 'timeout' => 8 ) );
-	$videos   = array();
+		$response = wp_remote_get( $request_url, array( 'timeout' => 8 ) );
+		$videos   = array();
 
-	if ( ! is_wp_error( $response ) && 200 === wp_remote_retrieve_response_code( $response ) ) {
-		$body = json_decode( wp_remote_retrieve_body( $response ), true );
-		foreach ( $body['items'] ?? array() as $item ) {
-			$snippet = $item['snippet'] ?? null;
-			$vid     = $snippet['resourceId']['videoId'] ?? '';
-			if ( ! $snippet || ! $vid ) {
-				continue;
+		if ( ! is_wp_error( $response ) && 200 === wp_remote_retrieve_response_code( $response ) ) {
+			$body = json_decode( wp_remote_retrieve_body( $response ), true );
+			foreach ( $body['items'] ?? array() as $item ) {
+				$snippet = $item['snippet'] ?? null;
+				$vid     = $snippet['resourceId']['videoId'] ?? '';
+				if ( ! $snippet || ! $vid ) {
+					continue;
+				}
+				$videos[] = array(
+					'id'        => $vid,
+					// Some uploads are titled with a decorative leading emoji
+					// (e.g. 🎙️ for podcast-style episodes) that renders as an
+					// oversized icon in the card; stripped here at the source
+					// so it never reaches the site or the app.
+					'title'     => sotb_strip_emoji( $snippet['title'] ?? '' ),
+					'thumbnail' => $snippet['thumbnails']['high']['url'] ?? $snippet['thumbnails']['default']['url'] ?? '',
+					'url'       => 'https://www.youtube.com/watch?v=' . $vid,
+				);
 			}
-			$videos[] = array(
-				'id'        => $vid,
-				'title'     => $snippet['title'] ?? '',
-				'thumbnail' => $snippet['thumbnails']['high']['url'] ?? $snippet['thumbnails']['default']['url'] ?? '',
-				'url'       => 'https://www.youtube.com/watch?v=' . $vid,
-			);
 		}
+
+		if ( $videos ) {
+			// Short cache: keeps the section fresh soon after a new upload
+			// without hammering the YouTube API on every page view (quota
+			// cost is 1 unit per refresh, well within the daily allowance).
+			set_transient( $transient_key, $videos, 10 * MINUTE_IN_SECONDS );
+		}
+
+		$cached = $videos;
 	}
 
-	if ( $videos ) {
-		set_transient( $transient_key, $videos, 12 * HOUR_IN_SECONDS );
-	}
-
-	return $videos;
+	return array_slice( $cached, 0, $max );
 }
+
+/* ============================================================
+   YOUTUBE — REFRESH MANUALE DELLA CACHE
+   Visita .../?sotb_refresh_videos=dddd subito dopo aver pubblicato
+   un nuovo video per vederlo comparire senza aspettare i 10 minuti
+   di cache naturale.
+   ============================================================ */
+function sotb_maybe_refresh_youtube_cache() {
+	if ( ( $_GET['sotb_refresh_videos'] ?? '' ) !== 'dddd' ) {
+		return;
+	}
+
+	delete_transient( sotb_youtube_cache_key() );
+	wp_safe_redirect( remove_query_arg( 'sotb_refresh_videos' ) );
+	exit;
+}
+add_action( 'template_redirect', 'sotb_maybe_refresh_youtube_cache' );
 
 /* ============================================================
    REST API — VIDEO ENDPOINT (per la app Flutter)

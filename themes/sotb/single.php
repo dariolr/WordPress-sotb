@@ -88,6 +88,52 @@ if ( have_posts() ) :
 			</span>
 			<?php endif; ?>
 		</div>
+
+		<?php
+		$share_url   = get_permalink();
+		$share_title = get_the_title();
+		?>
+		<div class="share-row" role="group" aria-label="Condividi questo articolo">
+			<a
+				class="share-link"
+				aria-label="Condividi su WhatsApp"
+				title="Condividi su WhatsApp"
+				target="_blank"
+				rel="noopener noreferrer"
+				href="https://wa.me/?text=<?php echo rawurlencode( $share_title . ' ' . $share_url ); ?>"
+			>
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2zm5.8 14.02c-.24.68-1.4 1.32-1.93 1.36-.5.05-1.02.24-3.4-.75-2.87-1.19-4.72-4.14-4.86-4.33-.14-.19-1.17-1.55-1.17-2.97 0-1.4.73-2.09.99-2.38.26-.28.57-.35.76-.35.19 0 .38 0 .55.01.18.01.42-.07.65.5.24.58.81 2.01.88 2.16.07.14.12.31.02.5-.1.19-.15.31-.29.48-.14.17-.3.37-.43.5-.14.14-.29.29-.13.57.17.28.75 1.24 1.61 2.01 1.11 1 2.05 1.3 2.33 1.45.28.14.44.12.6-.07.17-.19.71-.83.9-1.11.19-.28.38-.24.63-.14.26.09 1.64.77 1.92.91.28.14.47.21.53.33.07.12.07.71-.17 1.39z"/></svg>
+			</a>
+			<a
+				class="share-link"
+				aria-label="Condividi su Facebook"
+				title="Condividi su Facebook"
+				target="_blank"
+				rel="noopener noreferrer"
+				href="https://www.facebook.com/sharer/sharer.php?u=<?php echo rawurlencode( $share_url ); ?>"
+			>
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22.675 0h-21.35c-.732 0-1.325.593-1.325 1.325v21.351c0 .731.593 1.324 1.325 1.324h11.495v-9.294h-3.128v-3.622h3.128v-2.671c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24h-1.918c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12v9.294h6.116c.73 0 1.323-.593 1.323-1.324v-21.351c0-.732-.593-1.325-1.325-1.325z"/></svg>
+			</a>
+			<a
+				class="share-link"
+				aria-label="Condividi su X"
+				title="Condividi su X"
+				target="_blank"
+				rel="noopener noreferrer"
+				href="https://twitter.com/intent/tweet?url=<?php echo rawurlencode( $share_url ); ?>&text=<?php echo rawurlencode( $share_title ); ?>"
+			>
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+			</a>
+			<button
+				type="button"
+				class="share-link share-copy-link"
+				aria-label="Copia link articolo"
+				title="Copia link articolo"
+				data-share-url="<?php echo esc_url( $share_url ); ?>"
+			>
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+			</button>
+		</div>
 	</div>
 </header>
 

@@ -12,9 +12,18 @@
 	$og_title       = is_singular() ? get_the_title() . ' — Sons of the Beach' : 'Sons of the Beach';
 	$og_description = is_singular() ? wp_strip_all_tags( get_the_excerpt() ) : 'La voce autentica degli sport da spiaggia italiani. News, tornei e tutto il beach volley, footvolley e non solo.';
 	$og_url         = is_singular() ? get_permalink() : home_url( '/' );
-	$og_image       = get_template_directory_uri() . '/assets/img/og-image.png';
+	$og_image        = get_template_directory_uri() . '/assets/img/og-image.png';
+	$og_image_width  = 1200;
+	$og_image_height = 630;
 	if ( is_singular() && has_post_thumbnail() ) {
-		$og_image = get_the_post_thumbnail_url( null, 'large' );
+		// Declared og:image:width/height must match the real image, or some
+		// crawlers (notably Facebook's) discard the image instead of just
+		// scaling it — so pull the actual dimensions of the thumbnail used,
+		// rather than assuming every featured image is exactly 1200x630.
+		$thumb = wp_get_attachment_image_src( get_post_thumbnail_id(), 'large' );
+		if ( $thumb ) {
+			list( $og_image, $og_image_width, $og_image_height ) = $thumb;
+		}
 	}
 	?>
 	<meta property="og:type"        content="<?php echo is_singular() ? 'article' : 'website'; ?>">
@@ -23,9 +32,13 @@
 	<meta property="og:description" content="<?php echo esc_attr( $og_description ); ?>">
 	<meta property="og:url"         content="<?php echo esc_url( $og_url ); ?>">
 	<meta property="og:image"       content="<?php echo esc_url( $og_image ); ?>">
-	<meta property="og:image:width"  content="1200">
-	<meta property="og:image:height" content="630">
+	<meta property="og:image:width"  content="<?php echo (int) $og_image_width; ?>">
+	<meta property="og:image:height" content="<?php echo (int) $og_image_height; ?>">
 	<meta property="og:locale"      content="it_IT">
+	<?php $fb_app_id = get_theme_mod( 'sotb_facebook_app_id', '' ); ?>
+	<?php if ( $fb_app_id ) : ?>
+	<meta property="fb:app_id" content="<?php echo esc_attr( $fb_app_id ); ?>">
+	<?php endif; ?>
 	<meta name="twitter:card"        content="summary_large_image">
 	<meta name="twitter:title"       content="<?php echo esc_attr( $og_title ); ?>">
 	<meta name="twitter:description" content="<?php echo esc_attr( $og_description ); ?>">

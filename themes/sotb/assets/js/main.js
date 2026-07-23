@@ -152,4 +152,23 @@
     });
   });
 
+  /* ============================================================
+     6. COPY-LINK SHARE BUTTON
+     ============================================================ */
+  document.querySelectorAll('.share-copy-link').forEach(function (button) {
+    button.addEventListener('click', function () {
+      var url = button.getAttribute('data-share-url');
+      if (!url || !navigator.clipboard) return;
+
+      navigator.clipboard.writeText(url).then(function () {
+        button.classList.add('share-link--copied');
+        button.setAttribute('aria-label', 'Link copiato!');
+        setTimeout(function () {
+          button.classList.remove('share-link--copied');
+          button.setAttribute('aria-label', 'Copia link articolo');
+        }, 2000);
+      });
+    });
+  });
+
 })();

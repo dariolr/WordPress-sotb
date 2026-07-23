@@ -6,6 +6,11 @@
  * @package sotb
  */
 
+if ( ! SOTB_TORNEI_ENABLED ) {
+	wp_safe_redirect( home_url( '/' ) );
+	exit;
+}
+
 get_header();
 ?>
 

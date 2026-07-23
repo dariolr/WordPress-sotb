@@ -52,6 +52,7 @@ if ( $error_msg ) {
 					</div>
 				</div>
 
+				<?php if ( SOTB_TORNEI_ENABLED ) : ?>
 				<div class="contact-info-item">
 					<span class="contact-info-icon contact-info-ball" aria-hidden="true"><?php echo sotb_get_ball_image_html( 'contact-ball' ); ?></span>
 					<div>
@@ -59,6 +60,7 @@ if ( $error_msg ) {
 						<a href="https://tornei.sonsofthebeach.it" target="_blank" rel="noopener noreferrer" style="color:var(--color-accent);">tornei.sonsofthebeach.it</a>
 					</div>
 				</div>
+				<?php endif; ?>
 
 				<div class="contact-info-item">
 					<span class="contact-info-icon" aria-hidden="true">✉️</span>

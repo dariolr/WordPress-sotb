@@ -4,7 +4,7 @@ Theme URI: https://sonsofthebeach.it
 Author: Sons of the Beach
 Author URI: https://sonsofthebeach.it
 Description: Custom theme for Sons of the Beach — beach volleyball media site
-Version: 1.1.0
+Version: 1.1.4
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 8.0
@@ -332,22 +332,16 @@ body.scrolled .sotb-nav {
   text-decoration: none;
 }
 
-.nav-links a:hover,
-.nav-links a.current-menu-item,
-.nav-links .current-menu-item > a {
+.nav-links a:hover {
   color: var(--color-white);
   background: var(--color-border);
 }
 
-.nav-links a.nav-cta {
+.nav-links a.current-menu-item,
+.nav-links .current-menu-item > a {
   color: var(--color-accent);
-  border: 1px solid rgba(212, 180, 131, 0.35);
-  margin-left: 0.5rem;
-}
-
-.nav-links a.nav-cta:hover {
   background: rgba(212, 180, 131, 0.1);
-  color: var(--color-accent);
+  border: 1px solid rgba(212, 180, 131, 0.35);
 }
 
 /* Hamburger */
@@ -1498,6 +1492,47 @@ textarea.form-control {
   flex-wrap: wrap;
 }
 
+.share-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+}
+
+.share-link {
+  width: 32px;
+  height: 32px;
+  background: rgba(102, 112, 166, 0.08);
+  border: 1px solid rgba(102, 112, 166, 0.18);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+  color: #666b78;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.share-link:hover {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.share-link svg {
+  width: 15px;
+  height: 15px;
+  fill: currentColor;
+}
+
+.share-copy-link.share-link--copied {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #12141e;
+}
+
 .single-featured-media {
   background: #f4f0e8;
   padding-block: calc(var(--nav-height) + 1.5rem) 0;
@@ -1901,6 +1936,10 @@ textarea.form-control {
     grid-template-columns: repeat(3, 1fr);
   }
 
+  .pillars-grid.pillars-grid--two {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
   .interviews-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -2017,12 +2056,6 @@ textarea.form-control {
     font-size: 1rem;
     padding: 0.75rem 1rem;
     border-radius: var(--radius-sm);
-  }
-
-  .sotb-nav .nav-links a.nav-cta {
-    margin-left: 0;
-    margin-top: 0.75rem;
-    text-align: center;
   }
 }
 

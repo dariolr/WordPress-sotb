@@ -36,10 +36,12 @@ get_header();
 				<a href="<?php echo esc_url( home_url( '/news/' ) ); ?>" class="btn btn-primary">
 					Leggi le news
 				</a>
+				<?php if ( SOTB_TORNEI_ENABLED ) : ?>
 				<a href="https://tornei.sonsofthebeach.it" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">
 					Scopri i tornei
 					<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
 				</a>
+				<?php endif; ?>
 			</div>
 		</div>
 	</div>
@@ -63,7 +65,7 @@ get_header();
 			<p>Tre pilastri per raccontare beach volley, footvolley e le altre discipline sulla sabbia in tutte le loro sfaccettature.</p>
 		</header>
 
-		<div class="pillars-grid">
+		<div class="pillars-grid<?php echo SOTB_TORNEI_ENABLED ? '' : ' pillars-grid--two'; ?>">
 			<div class="pillar-card sotb-fade-in">
 				<span class="pillar-icon" aria-hidden="true">
 					<img src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/img/beach-volley-hero.webp" alt="">
@@ -88,6 +90,7 @@ get_header();
 				<p>Faccia a faccia con i campioni, i tecnici e le storie che non trovi altrove.</p>
 			</div>
 
+			<?php if ( SOTB_TORNEI_ENABLED ) : ?>
 			<div class="pillar-card sotb-fade-in">
 				<span class="pillar-icon" aria-hidden="true">
 					<!-- Trophy SVG -->
@@ -103,6 +106,7 @@ get_header();
 				<h3>Tornei</h3>
 				<p>Calendario, risultati e classifiche aggiornate in tempo reale su tutti i circuiti.</p>
 			</div>
+			<?php endif; ?>
 		</div>
 	</div>
 </section>
@@ -201,6 +205,7 @@ if ( ! empty( $sotb_videos ) ) :
 	</section>
 <?php endif; ?>
 
+<?php if ( SOTB_TORNEI_ENABLED ) : ?>
 <!-- ============================================================
      CTA TORNEI
      ============================================================ -->
@@ -235,5 +240,6 @@ if ( ! empty( $sotb_videos ) ) :
 		</div>
 	</div>
 </section>
+<?php endif; ?>
 
 <?php get_footer(); ?>
